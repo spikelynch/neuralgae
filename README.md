@@ -65,12 +65,12 @@ images: I thought a thousand weird dreamlike images could form the
 basis of a graphic novel or illustrated narrative. The framework for
 the text was the list of image classes used to generate each frame:
 
-> ./Neuralgia/image0.jpg: Gordon setter, minibus, sidewinder, miniskirt, hand-held computer, Doberman, steel drum, packet
-> ./Neuralgia/image1.jpg: terrapin, comic book, worm fence, African chameleon, mousetrap, prayer rug, kimono, maillot
-> ./Neuralgia/image2.jpg: common iguana, bullfrog, swimming trunks, bow, loggerhead, black grouse, horned viper, night snake
-> ./Neuralgia/image3.jpg: fiddler crab, eft, tiger shark, green mamba, coho, chambered nautilus, electric ray, boa constrictor
-> ./Neuralgia/image4.jpg: sleeping bag, coho, mongoose, coral reef, dhole, wood rabbit, frilled lizard, banded gecko
-> ./Neuralgia/image5.jpg: frilled lizard, banded gecko, Airedale, diamondback, hyena, common iguana, partridge, terrapin
+    ./Neuralgia/image0.jpg: Gordon setter, minibus, sidewinder, miniskirt, hand-held computer, Doberman, steel drum, packet
+    ./Neuralgia/image1.jpg: terrapin, comic book, worm fence, African chameleon, mousetrap, prayer rug, kimono, maillot
+    ./Neuralgia/image2.jpg: common iguana, bullfrog, swimming trunks, bow, loggerhead, black grouse, horned viper, night snake
+    ./Neuralgia/image3.jpg: fiddler crab, eft, tiger shark, green mamba, coho, chambered nautilus, electric ray, boa constrictor
+    ./Neuralgia/image4.jpg: sleeping bag, coho, mongoose, coral reef, dhole, wood rabbit, frilled lizard, banded gecko
+    ./Neuralgia/image5.jpg: frilled lizard, banded gecko, Airedale, diamondback, hyena, common iguana, partridge, terrapin
 
 
 ## Components
