@@ -58,7 +58,7 @@ some continuity between frames, but the random sampling helps the
 algorithm move out of local maxima in what's a really huge space of
 potential images.
 
-![frame1](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/s2.jpg)
+![frame1](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/s1.jpg)
 ![frame2](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/s2.jpg)
 ![frame3](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/s3.jpg)
 ![frame4](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/s4.jpg)
