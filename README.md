@@ -104,16 +104,16 @@ and I could then put together a simple Markov chain algorithm to
 generate a line of 'verse' for the eight classes belonging to each
 image:
 
+![image](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/image0.jpg)
 
-> [!image]()
-> Gordon setter a diamond pattern into limestone
-> minibus a government agency or grain
-> sidewinder small short-legged terrier originally by
-> miniskirt a hanging clusters of the
-> hand-held computer a fighting ax; used to
-> Doberman medium for military style raincoat;
-> steel drum a device that displays them
-> packet a long thick coarse weedy
+    Gordon setter a diamond pattern into limestone
+    minibus a government agency or grain
+    sidewinder small short-legged terrier originally by
+    miniskirt a hanging clusters of the
+    hand-held computer a fighting ax; used to
+    Doberman medium for military style raincoat;
+    steel drum a device that displays them
+    packet a long thick coarse weedy
 
 Markov text generation - or "ebooks", as it's become known on
 Twitter, after the famous @horse_ebooks account, which turned out to
