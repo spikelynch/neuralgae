@@ -43,6 +43,11 @@ those image categories which the particular parameters of the base
 image and the deepdraw renderer reinforced. Lobsters, nautiluses and
 snakelike or wormy shapes were really common attractors.
 
+![sea urchins](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/urchins.jpg)
+![flowers1](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/flowers.jpg)
+![flowers2](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/flowers2.jpg)
+![worms](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/worms.jpg)
+
 I got around this problem by adding a bit of randomness to the
 category selection process. Instead of taking the top N image
 categories from the classifier, and then rendering an image from
