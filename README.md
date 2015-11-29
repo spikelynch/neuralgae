@@ -1,5 +1,7 @@
 # Neuralgae
 
+A full version of Neuralgae is now online: [http://neuralgae.mikelynch.org/](http://neuralgae.mikelynch.org/)
+
 My original idea for NaNoGenMo15 was to try to apply an analogy of the
 deepdreams technique to written texts. Deepdreams works by
 taking a neural net which has been trained to discriminate between
@@ -129,10 +131,9 @@ Markov text generation - or "ebooks", as it's become known on
 Twitter, after the famous @horse_ebooks account, which turned out to
 not be a bot after all - is a bit done to death, but I think that the
 qualities of the source text here make for fairly decent automated
-surrealism. Combined with the images, it's surprisingly readable.
+surrealism. Combined with the images, it's surprisingly enjoyable.
 
-I'm still in the process of formatting an HTML version of the results:
-I'll be posting the URL when it's ready.
+You can read Neuralgae [here](http://neuralgae.mikelynch.org/).
 
 ## Dependencies
 
