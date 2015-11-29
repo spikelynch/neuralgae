@@ -1,4 +1,4 @@
-# neuralgae
+# Neuralgae
 
 My original idea for NaNoGenMo15 was to try to apply an analogy of the
 deepdreams technique to written texts. Deepdreams works by
@@ -72,27 +72,88 @@ the text was the list of image classes used to generate each frame:
     ./Neuralgia/image4.jpg: sleeping bag, coho, mongoose, coral reef, dhole, wood rabbit, frilled lizard, banded gecko
     ./Neuralgia/image5.jpg: frilled lizard, banded gecko, Airedale, diamondback, hyena, common iguana, partridge, terrapin
 
+At first I wrote a script to pull the first few words of the top entry
+for a Google search on adjacent terms, but this felt a bit
+scattershot, and many of the searches returned copies of the ImageNet
+category list in the first place. I had been playing around with the
+Python NLTK toolkit as a way to generate texts, which led me to
+realise that the list of 1000 image categories which the deepdreams
+neural net had been trained on - part of an annual image recognition
+tournament called ImageNet - was taken from
+[WordNet](http://wordnet.princeton.edu/), a popular on-line lexical
+database.
 
-## Components
+WordNet is a collection of "synsets" (synonym sets) which roughly
+speaking map onto a concept. Each of the ImageNet categories is a
+synset in WordNet, and WordNet also includes a definition of each
+synset. I decided to use NLTK to generate a dictionary for the 1000
+ImageNet categories:
 
-### deepdream.py
+    tench freshwater dace-like game fish of Europe and western Asia noted for ability to survive outside water
+    goldfish small golden or orange-red freshwater fishes of Eurasia used as pond or aquarium fishes
+    great_white_shark large aggressive shark widespread in warm seas; known to attack humans
+    tiger_shark large dangerous warm-water shark with striped or spotted body
+    hammerhead a stupid person; these words are used to express a low opinion of someone's intelligence
+    hammerhead the striking part of a hammer
+    hammerhead medium-sized live-bearing shark with eyes at either end of a flattened hammer-shaped head; worldwide in warm waters; can be dangerous
 
-This is an adaptation of the Google Deepdreams ipython notebook.
-I've added Audun's deepdraw technique to it
+Note that I included all of the different synsets attached to a single
+word, such as 'hammerhead'.  This dictionary gave be a source text
+which was guaranteed to have every word in the list of image classes,
+and I could then put together a simple Markov chain algorithm to
+generate a line of 'verse' for the eight classes belonging to each
+image:
 
-http://auduno.com/post/125362849838/visualizing-googlenet-classes
 
-### drawing
+> [!image]()
+> Gordon setter a diamond pattern into limestone
+> minibus a government agency or grain
+> sidewinder small short-legged terrier originally by
+> miniskirt a hanging clusters of the
+> hand-held computer a fighting ax; used to
+> Doberman medium for military style raincoat;
+> steel drum a device that displays them
+> packet a long thick coarse weedy
 
-dream.py
-neuralgae_draw.sh      -> draw.sh
-neuralgae_classify.py  -> classify.py
-neuralgae.py           -> run_neuralgae.py
+Markov text generation - or "ebooks", as it's become known on
+Twitter, after the famous @horse_ebooks account, which turned out to
+not be a bot after all - is a bit done to death, but I think that the
+qualities of the source text here make for fairly decent automated
+surrealism. Combined with the images, it's surprisingly readable.
 
-### writing
+I'm still in the process of formatting an HTML version of the results:
+I'll be posting the URL when it's ready.
 
-compile_defs.py
-classes.txt
-imagenet.py
-generate.py
-render.py
+## Dependencies
+
+The code requires the
+[Caffe deep learning framework](http://caffe.berkeleyvision.org/) with
+the Python interface pycaffe.
+
+It also needs the
+[CaffeNet](https://github.com/BVLC/caffe/tree/master/models/bvlc_reference_caffenet)
+and
+[GoogLeNet](https://github.com/BVLC/caffe/tree/master/models/bvlc_googlenet)
+neural models - I had to use both because for some reason I couldn't
+work out, GoogLeNet always segfaults when I use it to classify images
+on my Mac. I ended up using CaffeNet to do the classification and
+GoogLeNet to generate the images (I like GoogLeNet's output better).
+
+It also requires the following software:
+
+* the ImageMagick image processing and generation package
+* Python (2.7) and the following Python packages
+  - NLTK
+  - pystache
+
+There are several more Python dependencies required to get Caffe
+running - these are described in detail on the Caffe website.
+  
+## Credits
+
+* Princeton University (2010), [WordNet](http://wordnet.princeton.edu)
+  Princeton University
+* Bird, Steven, Edward Loper and Ewan Klein (2009), [Natural Language Processing with Python.](http://www.nltk.org/) O’Reilly Media Inc.
+* Øygard, Audun (2015), ['Visualising GoogLeNet classes'](http://auduno.com/post/125362849838/visualizing-googlenet-classes)
+* Mordvintsev, Alexander, Tyka, Michael and Olah, Christopher (2015)
+['deepdream GitHub repository'](https://github.com/google/deepdream)
