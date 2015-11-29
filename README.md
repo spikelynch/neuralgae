@@ -104,8 +104,8 @@ and I could then put together a simple Markov chain algorithm to
 generate a line of 'verse' for the eight classes belonging to each
 image:
 
+![image](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/image0.jpg)
 
-    ![image](https://raw.githubusercontent.com/spikelynch/neuralgae/master/images/image0.jpg)
     Gordon setter a diamond pattern into limestone
     minibus a government agency or grain
     sidewinder small short-legged terrier originally by
