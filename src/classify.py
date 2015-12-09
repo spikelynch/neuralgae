@@ -68,7 +68,7 @@ parser.add_argument("output",       type=str, help="Output json config")
 args = parser.parse_args()
 
 if not os.path.isfile(args.image):
-    print "%s is not a readable file" % args.input
+    print "%s is not a readable file" % args.image
     sys.exit(-1)
 
 caffe.set_mode_cpu()

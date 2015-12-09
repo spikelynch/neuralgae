@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import subprocess
 import os.path
 import json
@@ -27,15 +28,16 @@ parser.add_argument("outfile",      type=str, help="File to log image classes")
 
 args = parser.parse_args()
 
-
-
 outfile = os.path.join(args.outdir, args.outfile)
+
+start_targets = random.sample(range(0, 1000), NSTART)
 
 if args.initial:
     lastimage = args.initial
+    print args.initial, "HEY"
 else:
-    start_targets = random.sample(range(0, 1000), NSTART)
     conffile = os.path.join(args.outdir, 'conf0.json')
+    print "Config file: %s " % conffile
     neuralgae.write_config(start_targets, conffile)
     subprocess.call(["./draw.sh", args.outdir, 'image0', conffile, SIZE, SCALE, BLEND])
     lastimage = os.path.join(args.outdir, 'image0.jpg')
@@ -47,8 +49,11 @@ classes = ', '.join([imagen.name(c) for c in start_targets])
 with open(outfile, 'w') as f:
     f.write("%s: %s\n" % (lastimage, classes))
 
+print "lastimage = %s" % lastimage
 
-for i in range(0, args.number):
+print "generating %d frames" % args.number
+
+for i in range(1, args.number + 1):
     jsonfile = os.path.join(args.outdir, "conf%d.json" % i)
     subprocess.call(["./classify.py", str(NTWEEN), str(NSAMPLE), lastimage, jsonfile])
     subprocess.call(["./draw.sh", args.outdir, "image%d" % i, jsonfile, SIZE, SCALE, BLEND])

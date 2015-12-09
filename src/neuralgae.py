@@ -12,6 +12,7 @@ def write_config(targets, outf):
         jscf = pystache.render(template, details)
         with open(outf, 'w') as o:
             o.write(jscf)
+            print "Wrote to %s" % outf
 
 def read_config(jsonfile):
     with open(jsonfile, 'r') as f:
