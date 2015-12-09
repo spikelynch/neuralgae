@@ -27,24 +27,30 @@ parser.add_argument("outdir",       type=str, help="Output directory")
 parser.add_argument("outfile",      type=str, help="File to log image classes")
 
 args = parser.parse_args()
+imagen = ImageNet("./classes.txt")
 
 outfile = os.path.join(args.outdir, args.outfile)
 
-start_targets = random.sample(range(0, 1000), NSTART)
+classes = ""
 
 if args.initial:
-    lastimage = args.initial
-    print args.initial, "HEY"
+    base = args.initial
+    lastimage = "%s.jpg" % base
+    initconf = "%s.json" % base
+    t = neuralgae.read_config(initconf)
+    if t:
+        print t
+        classes = ', '.join([imagen.name(c) for c in t])
 else:
+    start_targets = random.sample(range(0, 1000), NSTART)
     conffile = os.path.join(args.outdir, 'conf0.json')
     print "Config file: %s " % conffile
     neuralgae.write_config(start_targets, conffile)
     subprocess.call(["./draw.sh", args.outdir, 'image0', conffile, SIZE, SCALE, BLEND])
     lastimage = os.path.join(args.outdir, 'image0.jpg')
+    classes = ', '.join([imagen.name(c) for c in start_targets])
 
-imagen = ImageNet("./classes.txt")
 
-classes = ', '.join([imagen.name(c) for c in start_targets])
 
 with open(outfile, 'w') as f:
     f.write("%s: %s\n" % (lastimage, classes))
