@@ -29,8 +29,8 @@ def generate(cfd, word = 'the', num = 50):
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument("-n", "--number", type=int, default=LINELENGTH,help="Words per line")
 parser.add_argument("logfile",  type=str, help="Log file from neuralgia_control")
-parser.add_argument("linelength", type=int, help="Words per line")
 
 args = parser.parse_args()
 
@@ -58,7 +58,7 @@ with open(TEXT, 'r') as f:
                 for w in words:
                     start = w.replace(' ', '_')
                     try:
-                        line = ' '.join(generate(cfd, start, args.linelength))
+                        line = ' '.join(generate(cfd, start, args.number))
                     except IndexError as e:
                         print "ERROR: %s %s" % ( start, e )
                     print line.replace('_', ' ')
