@@ -1,0 +1,10 @@
+# Config file for neuralgae posting bot
+
+app_key: 
+app_secret: 
+oauth_token: 
+oauth_token_secret: 
+images: /abs/path/to/image/dir
+index: index.txt
+index_re: "(image\\d+\\.jpg): (.*)"
+lastfile: last.txt
