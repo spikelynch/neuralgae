@@ -13,6 +13,8 @@ blend=$6
 mkdir -p $working
 mkdir -p $outdir
 
+echo "SIZE = ${size}"
+
 convert -size ${size}x${size} xc: +noise Random ${working}/random.png
 
 convert ${working}/random.png  -channel R \
@@ -38,5 +40,6 @@ convert -size ${size}x${size} gradient:black-white ${working}/fade.jpg
 composite -blend ${blend} ${working}/fade.jpg ${working}/base1.jpg ${working}/base.jpg
 
 #convert ${working}/graybase.jpg -colorspace rgb -type truecolor ${working}/base.jpg
+
 
 ./dream.py --config $config --basefile ${output} ${working}/base.jpg ${outdir}

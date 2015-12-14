@@ -11,13 +11,14 @@ import neuralgae
 
 
 
-NSTART = 8
+NSTART = 5 
 
-NTWEEN = 100
-NSAMPLE = 8
-SIZE = "224"
-SCALE = "8"
-BLEND = "75"
+NTWEEN = 20
+NSAMPLE = 5
+#DRAWMODEL = "caffenet"  - this is in the json template
+SIZE = "227"
+SCALE = "32"
+BLEND = "60"
 
 
 parser = argparse.ArgumentParser()

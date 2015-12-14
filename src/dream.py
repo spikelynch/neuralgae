@@ -598,8 +598,9 @@ if __name__ == '__main__':
             args.target = foci
         
     # TODO: if bfile exists, add something to its name 
-
-    write_json(bfile, vars(args))
+    if not args.config:
+        # don't write out a config file if one was passed in
+        write_json(bfile, vars(args))
 
     vfile = None
     if args.verbose:
@@ -618,7 +619,6 @@ if __name__ == '__main__':
     original_h = net.blobs['data'].height
 
     print "Data original size: %d %d" % ( original_w, original_h )
-
 
     if args.keys:
         print "Layers"

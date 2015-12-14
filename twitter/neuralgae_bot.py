@@ -23,11 +23,13 @@ Returns:
     oauth_token = cf['oauth_token']
     oauth_token_secret = cf['oauth_token_secret']
     twitter = Twython(app_key, app_secret, oauth_token, oauth_token_secret)
-    imgfile = os.path.join(DIR, IMAGE)
+    imgfile = os.path.join(cf['images'], img)
+    print("Posting %s" % imgfile)
+    if len(text) > 130:
+        text = text[:129]
     with open(imgfile, 'rb') as ih:
         response = twitter.upload_media(media=ih)
-        print(response['media_id'])
-        out = twitter.update_status(status=TEXT, media_ids=response['media_id'])
+        out = twitter.update_status(status=text, media_ids=response['media_id'])
         print("Posted")
         return True
     return False
@@ -107,6 +109,9 @@ def config_has(cf, keys):
             ok = False
     return ok
 
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', required=True, type=str, help="Config file")
@@ -115,7 +120,7 @@ if __name__ == '__main__':
     cf = load_config(args.config)
     if config_has(cf, ARGS):
         img, text = get_next_post(cf)
-        print("Next up: %s, %s" % (img, text))
+        print("Next image: %s\nText: %s" % (img, text))
         if args.dry_run:
             print("Dry run")
         else:
