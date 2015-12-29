@@ -3,27 +3,32 @@
 import sys
 import subprocess
 import os.path
+import shutil
 import json
 import random
 import argparse
 from neuralgae import ImageNet
 import neuralgae
+import classify
 
-
-
-NSTART = 5 
-
-NTWEEN = 20
-NSAMPLE = 5
-#DRAWMODEL = "caffenet"  - this is in the json template
-SIZE = "227"
-SCALE = "32"
-BLEND = "60"
+DEFAULTS = {
+    'nstart': 3,
+    'ntween': 50,
+    'nsample': 3,
+    'scale': 80,
+    'blend': 60,
+    'model': 'googlenet',
+    'size': 224,
+    'iters': 300,
+    'sigma': 0.33
+}
+    
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=100, help="Number of frames to generate")
 parser.add_argument("-i", "--initial", type=str, default=None, help="Initial image - if not supplied, will start with a random image")
+parser.add_argument("-c", "--config", type=str, default=None, help="Global config file")
 parser.add_argument("outdir",       type=str, help="Output directory")
 parser.add_argument("outfile",      type=str, help="File to log image classes")
 
@@ -32,6 +37,16 @@ imagen = ImageNet("./classes.txt")
 
 outfile = os.path.join(args.outdir, args.outfile)
 
+if args.config:
+    with open(args.config, 'r') as f:
+        cf = json.load(f)
+else:
+    cf = DEFAULTS
+
+cfdump = os.path.join(args.outdir, 'global.conf')
+with open(cfdump, 'w') as cfd:
+    json.dump(cf, cfd, indent=4)
+    
 classes = ""
 
 if args.initial:
@@ -43,11 +58,12 @@ if args.initial:
         print t
         classes = ', '.join([imagen.name(c) for c in t])
 else:
-    start_targets = random.sample(range(0, 1000), NSTART)
+    start_targets = random.sample(range(0, 1000), cf['nstart'])
     conffile = os.path.join(args.outdir, 'conf0.json')
     print "Config file: %s " % conffile
-    neuralgae.write_config(start_targets, conffile)
-    subprocess.call(["./draw.sh", args.outdir, 'image0', conffile, SIZE, SCALE, BLEND])
+    cf['targets'] = ','.join([ str(x) for x in start_targets ])
+    neuralgae.write_config(cf, conffile)
+    subprocess.call(["./draw.sh", args.outdir, 'image0', conffile, str(cf['size']), str(cf['scale']), str(cf['blend'])])
     lastimage = os.path.join(args.outdir, 'image0.jpg')
     classes = ', '.join([imagen.name(c) for c in start_targets])
 
@@ -62,8 +78,13 @@ print "generating %d frames" % args.number
 
 for i in range(1, args.number + 1):
     jsonfile = os.path.join(args.outdir, "conf%d.json" % i)
-    subprocess.call(["./classify.py", str(NTWEEN), str(NSAMPLE), lastimage, jsonfile])
-    subprocess.call(["./draw.sh", args.outdir, "image%d" % i, jsonfile, SIZE, SCALE, BLEND])
+    targets = classify.classify(lastimage, cf['ntween'])
+    if cf['nsample'] < cf['ntween']:
+        targets = random.sample(targets, cf['nsample'])
+    print targets
+    cf['targets'] = ','.join([ str(x) for x in targets ])
+    neuralgae.write_config(cf, jsonfile)
+    subprocess.call(["./draw.sh", args.outdir, "image%d" % i, jsonfile, str(cf['size']), str(cf['scale']), str(cf['blend'])])
     lastimage = os.path.join(args.outdir, "image%d.jpg" % i)
     t = neuralgae.read_config(jsonfile)
     if t:

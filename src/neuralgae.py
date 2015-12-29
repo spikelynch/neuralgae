@@ -2,10 +2,10 @@ import pystache, json, re
 
 TEMPLATE = './templates/json.mustache'
 
-def write_config(targets, outf):
+def write_config(details, outf):
 
-    details = {}
-    details['targets'] = ','.join([str(x) for x in targets])
+#    details = {}
+#    details['targets'] = ','.join([str(x) for x in targets])
 
     with open(TEMPLATE, 'r') as t:
         template = t.read()

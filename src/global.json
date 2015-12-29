@@ -1,0 +1,11 @@
+{
+    "scale": 80,
+    "blend": 60,
+    "size": 224,
+    "model": "googlenet",
+    "sigma": 0.4,
+    "iters": 10,
+    "nstart": 3,
+    "ntween": 50,
+    "nsample": 3
+}

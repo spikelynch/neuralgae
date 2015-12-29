@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-# This script runs the Caffenet image classifier, samples the returned
-# cateories and writes out a json file which can be passed to dream.py
+# code to classify an input image and return the top n matching targets
 
 from cStringIO import StringIO
 
@@ -59,57 +58,54 @@ model_name = MODELS[MODEL]
 
 classes = ImageNet(CLASSES)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("n",            type=str, help="Number of classes")
-parser.add_argument("sample",       type=str, help="Sample size for next iter")
-parser.add_argument("image",        type=str, help="The image to classify")
-parser.add_argument("output",       type=str, help="Output json config")
+# parser = argparse.ArgumentParser()
+# parser.add_argument("n",            type=str, help="Number of classes")
+# parser.add_argument("sample",       type=str, help="Sample size for next iter")
+# parser.add_argument("image",        type=str, help="The image to classify")
+# parser.add_argument("output",       type=str, help="Output json config")
 
-args = parser.parse_args()
+# args = parser.parse_args()
 
-if not os.path.isfile(args.image):
-    print "%s is not a readable file" % args.image
-    sys.exit(-1)
+# if not os.path.isfile(args.image):
+#     print "%s is not a readable file" % args.image
+#     sys.exit(-1)
 
-caffe.set_mode_cpu()
-model_d = os.path.join(CAFFE_MODELS, model_name)
-proto = os.path.join(model_d, 'deploy.prototxt')
-model = os.path.join(model_d, '%s.caffemodel' % model_name)
+def classify(image, n):
+    """Classifies an image file and returns the top n matching classes"""
+    caffe.set_mode_cpu()
+    model_d = os.path.join(CAFFE_MODELS, model_name)
+    proto = os.path.join(model_d, 'deploy.prototxt')
+    model = os.path.join(model_d, '%s.caffemodel' % model_name)
 
-net = caffe.Net(proto, model, caffe.TEST)
+    net = caffe.Net(proto, model, caffe.TEST)
 
-transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
-transformer.set_transpose('data', (2,0,1))
-transformer.set_mean('data', np.load(MEAN).mean(1).mean(1)) # mean pixel
-transformer.set_raw_scale('data', 255)  # the reference model operates on images in [0,255] range instead of [0,1]
-transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
+    transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
+    transformer.set_transpose('data', (2,0,1))
+    transformer.set_mean('data', np.load(MEAN).mean(1).mean(1)) # mean pixel
+    transformer.set_raw_scale('data', 255)  # the reference model operates on images in [0,255] range instead of [0,1]
+    transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
 
-net.blobs['data'].data[...] = transformer.preprocess('data', caffe.io.load_image(args.image))
-print "About to predict..."
-out = net.forward()
+    net.blobs['data'].data[...] = transformer.preprocess('data', caffe.io.load_image(image))
+    print "About to predict..."
+    out = net.forward()
 
-#print out.keys()
+    targets = []
 
-#p = out['prob'].argmax()
+    nclasses = int(n) + 1
 
-#print "Image {}".format(p)
+    top_k = net.blobs['prob'].data[0].flatten().argsort()
+    for i in top_k[-1:-nclasses:-1]:
+        targets.append(i)
+    return targets
 
-targets = []
+        
+# s = int(args.sample)
+# n = int(args.n)
 
-nclasses = int(args.n) + 1
+# if s < n:
+#     print "Sampling %d of %d" % (s, n)
+#     targets = random.sample(targets, s)
+#     print "Sample: " + ', '.join([classes.name(i) for i in targets])
 
-top_k = net.blobs['prob'].data[0].flatten().argsort()
-for i in top_k[-1:-nclasses:-1]:
-    print classes.name(i)
-    targets.append(i)
-
-s = int(args.sample)
-n = int(args.n)
-
-if s < n:
-    print "Sampling %d of %d" % (s, n)
-    targets = random.sample(targets, s)
-    print "Sample: " + ', '.join([classes.name(i) for i in targets])
-
-neuralgae.write_config(targets, args.output)
+# neuralgae.write_config(targets, args.output)
 
