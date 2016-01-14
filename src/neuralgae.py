@@ -1,10 +1,10 @@
-import pystache, json, re
+import pystache, json, re, os.path
 
 TEMPLATE = './Templates/json.mustache'
 
 CLASS_RE = {
-    'googlenet': '^(\d+) (n\d+) (.*)$',
-    'caffenet': '^(\d+) (n\d+) (.*)$',
+    'googlenet': '^(\d+) n\d+ (.*)$',
+    'caffenet': '^(\d+) n\d+ (.*)$',
     'places': '^(\d+) (\S*)$'
     }
 
@@ -30,23 +30,30 @@ def read_config(jsonfile):
 
 class ImageCategories(object):
     """A class for looking up category names"""
-    # FIXME fail graciously if the file's not there
     def __init__(self, model):
-        self._names = {}
+        self.model = model
+        self.names = {}
         classfile = os.path.join('./Classes', '%s.txt' % model)
-        re_class = re.compile('^(\d+) (n\d+) (.*)$')
-        with open(classfile, 'r') as f:
-            for l in f:
-                m = re_class.search(l)
-                if m:
-                    i = int(m.group(1))
-                    names = m.group(3)
-                    self._names[i] = names.split(', ')
-                else:
-                    print "NO"
+        if os.path.isfile(classfile) and model in CLASS_RE:
+            re_class = re.compile(CLASS_RE[model])
+            with open(classfile, 'r') as f:
+                for l in f:
+                    m = re_class.search(l)
+                    if m:
+                        i = int(m.group(1))
+                        names = m.group(2)
+                        self.names[i] = names.split(', ')
+        else:
+            self.names = None
 
     def name(self, i):
-        return self._names[i][0]
+        if self.names:
+            return self.names[i][0]
+        else:
+            return str(i)
 
     def names(self, i):
-        return self._names[i]
+        if self.names:
+            return self.names[i]
+        else:
+            return [ str(i) ]

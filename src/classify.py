@@ -61,7 +61,7 @@ LAYERS = {
 MODEL = DEFAULT_MODEL
 model_name = MODELS[MODEL]
 
-classes = ImageCategories(CLASSES)
+#classes = ImageCategories(CLASSES)
 
 # parser = argparse.ArgumentParser()
 # parser.add_argument("n",            type=str, help="Number of classes")
