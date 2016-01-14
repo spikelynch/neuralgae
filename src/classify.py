@@ -23,6 +23,7 @@ import neuralgae
 import caffe
 import random
 
+DEFAULT_MODEL = 'caffenet'
 
 CLASSES = './classes.txt'
 
@@ -53,7 +54,11 @@ MODELS = {
 #    'cars' : 'cars'
 }
 
-MODEL = 'caffenet'
+LAYERS = {
+    'oxford': 'fc8_oxford_102'
+}
+
+MODEL = DEFAULT_MODEL
 model_name = MODELS[MODEL]
 
 classes = ImageNet(CLASSES)
@@ -70,9 +75,10 @@ classes = ImageNet(CLASSES)
 #     print "%s is not a readable file" % args.image
 #     sys.exit(-1)
 
-def classify(image, n):
+def classify(model_label, image, n):
     """Classifies an image file and returns the top n matching classes"""
     caffe.set_mode_cpu()
+    model_name = MODELS[model_label]
     model_d = os.path.join(CAFFE_MODELS, model_name)
     proto = os.path.join(model_d, 'deploy.prototxt')
     model = os.path.join(model_d, '%s.caffemodel' % model_name)
@@ -93,12 +99,33 @@ def classify(image, n):
 
     nclasses = int(n) + 1
 
-    top_k = net.blobs['prob'].data[0].flatten().argsort()
+    print net.blobs.keys()
+
+    layer = 'prob'
+    if model_label in LAYERS:
+        layer = LAYERS[model_label] 
+    top_k = net.blobs[layer].data[0].flatten().argsort()
+    #print net.blobs[layer].data[0]
     for i in top_k[-1:-nclasses:-1]:
         targets.append(i)
     return targets
 
-        
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser()
+    ap.add_argument('model', type=str, help="Model name")
+    ap.add_argument('image', type=str, help="Image to classify")
+    ap.add_argument('classes', type=int, help="Number of classes to return")
+    args = ap.parse_args()
+    model = args.model
+    if model not in MODELS:
+        print "Unknown moded %s" % model
+        sys.exit(-1)
+    image = args.image
+    classes = args.classes
+    classes = classify(model, image, classes)
+    print classes 
+
+            
 # s = int(args.sample)
 # n = int(args.n)
 
