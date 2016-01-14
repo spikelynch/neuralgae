@@ -11,7 +11,14 @@ from neuralgae import ImageCategories
 import neuralgae
 import classify
 
-TARGETS = 20
+
+NTARGETS = {
+    'googlenet': 1000,
+    'caffenet': 1000,
+    'places': 204,
+    'flickr_style': 10,
+    'oxford': 102
+}
 
 DEFAULTS = {
     'nstart': 3,
@@ -68,6 +75,7 @@ else:
     cf = DEFAULTS
 
 imagen = ImageCategories(cf['model'])
+max_targets = TARGETS[cf['model']]
 
 cfdump = os.path.join(args.outdir, 'global.conf')
 with open(cfdump, 'w') as cfd:
@@ -84,7 +92,7 @@ if args.initial:
         print t
         classes = ', '.join([imagen.name(c) for c in t])
 else:
-    start_targets = random.sample(range(0, TARGETS), cf['nstart'])
+    start_targets = random.sample(range(0, max_targets), cf['nstart'])
     conffile = os.path.join(args.outdir, 'conf0.json')
     print "Config file: %s " % conffile
     cf['targets'] = ','.join([ str(x) for x in start_targets ])
