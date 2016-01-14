@@ -1,6 +1,12 @@
 import pystache, json, re
 
-TEMPLATE = './templates/json.mustache'
+TEMPLATE = './Templates/json.mustache'
+
+CLASS_RE = {
+    'googlenet': '^(\d+) (n\d+) (.*)$',
+    'caffenet': '^(\d+) (n\d+) (.*)$',
+    'places': '^(\d+) (\S*)$'
+    }
 
 def write_config(details, outf):
 
@@ -22,10 +28,12 @@ def read_config(jsonfile):
     return None
 
 
-class ImageNet(object):
-    """A class for looking up ImageNet category names"""
-    def __init__(self, classfile):
+class ImageCategories(object):
+    """A class for looking up category names"""
+    # FIXME fail graciously if the file's not there
+    def __init__(self, model):
         self._names = {}
+        classfile = os.path.join('./Classes', '%s.txt' % model)
         re_class = re.compile('^(\d+) (n\d+) (.*)$')
         with open(classfile, 'r') as f:
             for l in f:

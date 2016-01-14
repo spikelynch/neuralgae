@@ -7,7 +7,7 @@ import shutil
 import json
 import random, math
 import argparse
-from neuralgae import ImageNet
+from neuralgae import ImageCategories
 import neuralgae
 import classify
 
@@ -58,7 +58,6 @@ parser.add_argument("outdir",       type=str, help="Output directory")
 parser.add_argument("outfile",      type=str, help="File to log image classes")
 
 args = parser.parse_args()
-imagen = ImageNet("./classes.txt")
 
 outfile = os.path.join(args.outdir, args.outfile)
 
@@ -67,6 +66,8 @@ if args.config:
         cf = json.load(f)
 else:
     cf = DEFAULTS
+
+imagen = ImageCategories(cf['model'])
 
 cfdump = os.path.join(args.outdir, 'global.conf')
 with open(cfdump, 'w') as cfd:

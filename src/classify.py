@@ -17,7 +17,7 @@ import os, os.path
 import argparse
 import matplotlib.pyplot as plt
 
-from neuralgae import ImageNet
+#from neuralgae import ImageCategories
 import neuralgae
 
 import caffe
@@ -61,7 +61,7 @@ LAYERS = {
 MODEL = DEFAULT_MODEL
 model_name = MODELS[MODEL]
 
-classes = ImageNet(CLASSES)
+classes = ImageCategories(CLASSES)
 
 # parser = argparse.ArgumentParser()
 # parser.add_argument("n",            type=str, help="Number of classes")
