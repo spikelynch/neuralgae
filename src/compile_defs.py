@@ -3,15 +3,14 @@
 from nltk.corpus import wordnet as wn
 
 
-from imagenet import ImageNet
+from neuralgae import ImageCategories
 
-CLASSES = '../../Classes/classes.txt'
 OUTFILE = 'definitions.txt'
 
-inet = ImageNet(CLASSES)
+inet = ImageCategories('places')
 
 with open(OUTFILE, 'w') as f:
-    for i in range(0, 1000):
+    for i in range(0, 204):
         w = inet.name(i)
         w_ = w.replace(' ', '_')
         ss = wn.synsets(w_)

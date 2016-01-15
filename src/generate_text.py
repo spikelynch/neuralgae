@@ -3,7 +3,7 @@
 import nltk, random, re, argparse, sys, os.path
 
 
-TEXT = 'definitions.txt'
+DEFINITIONS = './Definitions'
 LINELENGTH = 6
 TWEET_CHARS = 116
 
@@ -50,6 +50,7 @@ def make_tweet(cfd, words, num):
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=LINELENGTH,help="Words per line")
 parser.add_argument("-t", "--tweets", action='store_true', help="Limit output to %s characters" % TWEET_CHARS)
+parser.add_argument("-m", "--model", type=str, default="googlenet", help="Model name (for definitions)")
 parser.add_argument("logfile",  type=str, help="Log file from neuralgia_control")
 
 
@@ -60,11 +61,15 @@ if not os.path.isfile(args.logfile):
     sys.exit(-1)
 
 
+deffile = os.path.join(DEFINITIONS, '%s.txt' % args.model)
 
+if not os.path.isfile(deffile):
+    print "Can't find %s" % deffile
+    sys.exit(-1)
     
 
 
-with open(TEXT, 'r') as f:
+with open(deffile, 'r') as f:
     corpus = f.read()
     corpus = corpus.split()
     pairs = makePairs(corpus)
