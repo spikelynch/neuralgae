@@ -61,19 +61,6 @@ LAYERS = {
 MODEL = DEFAULT_MODEL
 model_name = MODELS[MODEL]
 
-#classes = ImageCategories(CLASSES)
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument("n",            type=str, help="Number of classes")
-# parser.add_argument("sample",       type=str, help="Sample size for next iter")
-# parser.add_argument("image",        type=str, help="The image to classify")
-# parser.add_argument("output",       type=str, help="Output json config")
-
-# args = parser.parse_args()
-
-# if not os.path.isfile(args.image):
-#     print "%s is not a readable file" % args.image
-#     sys.exit(-1)
 
 def classify(model_label, image, n):
     """Classifies an image file and returns the top n matching classes"""
@@ -92,15 +79,9 @@ def classify(model_label, image, n):
     transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
 
     net.blobs['data'].data[...] = transformer.preprocess('data', caffe.io.load_image(image))
-    print "About to predict..."
     out = net.forward()
-
     targets = []
-
     nclasses = int(n) + 1
-
-    print net.blobs.keys()
-
     layer = 'prob'
     if model_label in LAYERS:
         layer = LAYERS[model_label] 
@@ -123,7 +104,7 @@ if __name__ == '__main__':
     image = args.image
     classes = args.classes
     classes = classify(model, image, classes)
-    print classes 
+    print ','.join([ str(c) for c in classes])
 
             
 # s = int(args.sample)
