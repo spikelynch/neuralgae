@@ -13,7 +13,7 @@ import argparse
 import json
 import re
 import sys
-import os, os.path
+import os, os.path, shutil, subprocess
 import argparse
 import matplotlib.pyplot as plt
 
@@ -91,6 +91,19 @@ def classify(model_label, image, n):
         targets.append(i)
     return targets
 
+def classify_remote(model, image, n, cf):
+    """Runs the classify on a remote server"""
+    script = os.path.join(cf['basedir'], 'classify.py')
+    filename = os.path.basename(image)
+    shutil.copyfile(image, os.path.join(cf['localdir'], filename))
+    imagecp = os.path.join(cf['remotedir'], filename)
+    command = ' '.join([ "source /etc/profile;", script, model, imagecp, str(n)])
+    out = subprocess.check_output(["ssh", "-p", cf['port'], cf['host'], command])
+    results = [int(s) for s in out.split(',')]
+    return results
+
+        
+
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('model', type=str, help="Model name")
@@ -107,13 +120,4 @@ if __name__ == '__main__':
     print ','.join([ str(c) for c in classes])
 
             
-# s = int(args.sample)
-# n = int(args.n)
-
-# if s < n:
-#     print "Sampling %d of %d" % (s, n)
-#     targets = random.sample(targets, s)
-#     print "Sample: " + ', '.join([classes.name(i) for i in targets])
-
-# neuralgae.write_config(targets, args.output)
 

@@ -1,11 +1,11 @@
 {
-    "scale": [ "random", 6, 10 ],
+    "scale": 3,
     "blend": 80,
-    "size": 227,
-    "model": "flickr_style",
-    "sigma": 0.3,
-    "iters": 300,
+    "size": 224,
+    "model": "googlenet",
+    "sigma": 0.9,
+    "iters": 100,
     "nstart": 4,
-    "ntween": 8,
+    "ntween": 32,
     "nsample": 4
 }

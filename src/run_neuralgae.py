@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import sys
 import subprocess
 import os.path
@@ -61,6 +62,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=100, help="Number of frames to generate")
 parser.add_argument("-i", "--initial", type=str, default=None, help="Initial image - if not supplied, will start with a random image")
 parser.add_argument("-c", "--config", type=str, default=None, help="Global config file")
+parser.add_argument("-r", "--remote", type=str, default=None, help="Remote classify parameters")
 parser.add_argument("outdir",       type=str, help="Output directory")
 parser.add_argument("outfile",      type=str, help="File to log image classes")
 
@@ -74,8 +76,14 @@ if args.config:
 else:
     cf = DEFAULTS
 
+if args.remote:
+    with open(args.remote, 'r') as f:
+        remote_cf = json.load(f)
+else:
+    remote_cf = None
+    
 imagen = ImageCategories(cf['model'])
-max_targets = TARGETS[cf['model']]
+max_targets = NTARGETS[cf['model']]
 
 cfdump = os.path.join(args.outdir, 'global.conf')
 with open(cfdump, 'w') as cfd:
@@ -113,11 +121,14 @@ print "generating %d frames" % args.number
 
 for i in range(1, args.number + 1):
     jsonfile = os.path.join(args.outdir, "conf%d.json" % i)
-    targets = classify.classify(cf['model'], lastimage, cf['ntween'])
+    targets = []
+    if remote_cf:
+        targets = classify.classify_remote(cf['model'], lastimage, cf['ntween'], remote_cf)
+    else:
+        targets = classify.classify(cf['model'], lastimage, cf['ntween'])
     if cf['nsample'] < cf['ntween']:
         targets = random.sample(targets, cf['nsample'])
     print targets
-    #sys.exit(-1)
     cf['targets'] = ','.join([ str(x) for x in targets ])
     frame_cf = interpolate_cf(cf, 1.0 * i / (args.number + 1))
     neuralgae.write_config(frame_cf, jsonfile)
