@@ -36,7 +36,8 @@ convert ${working}/random.png  -channel B \
 convert ${working}/red.jpg ${working}/green.jpg ${working}/blue.jpg -combine ${working}/base1.jpg
 
 
-convert -size ${size}x${size} gradient:black-white ${working}/fade.jpg
+#convert -size ${size}x${size} gradient:black-white ${working}/fade.jpg
+./perlin.sh ${size}x${size} ${working}/fade.jpg
 composite -blend ${blend} ${working}/fade.jpg ${working}/base1.jpg ${working}/base.jpg
 
 #convert ${working}/graybase.jpg -colorspace rgb -type truecolor ${working}/base.jpg

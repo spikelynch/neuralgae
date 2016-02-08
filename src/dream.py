@@ -582,14 +582,14 @@ if __name__ == '__main__':
             sys.exit(-1)
         bfile = os.path.join(output_path, f)
 
+    write_conf = True
         
     if args.config:
         if not os.path.isfile(args.config):
             print "Config file %s not found" % args.config
             sys.exit(-1)
         args = read_json(args.config)
-
-            
+        write_conf = False
 
     if args.target:
         if args.target in MAGIC_TARGETS and not args.config:
@@ -597,10 +597,11 @@ if __name__ == '__main__':
             foci = make_magic_targets(args.target, args.model)
             args.target = foci
         
-    # TODO: if bfile exists, add something to its name 
-    if not args.config:
+    
+    if write_conf:
         # don't write out a config file if one was passed in
         write_json(bfile, vars(args))
+
 
     vfile = None
     if args.verbose:

@@ -18,6 +18,13 @@ arch (used of behavior or attitude) characteristic of those who treat others wit
 arch expert in skulduggery
 arch naughtily or annoyingly playful
 art_gallery a room or series of rooms where works of art are exhibited
+art_studio the products of human creativity; works of art collectively
+art_studio the creation of beautiful or significant things
+art_studio a superior skill that you can learn by study and practice and observation
+art_studio photographs or other visual representations in a printed publication
+art_studio workplace for the teaching or practice of an art
+art_studio an apartment with a living space and a bathroom and a small kitchen
+art_studio workplace consisting of a room or building where movies or television shows or radio programs are produced and recorded
 assembly_line mechanical system in a factory whereby an article is conveyed through sites at which successive operations are performed on it
 attic floor consisting of open space at the top of a house just below roof; often used for storage
 attic the dialect of Ancient Greek spoken and written in Attica and Athens and Ionia
@@ -29,6 +36,28 @@ apartment_building a building that is divided into apartments
 badlands deeply eroded barren land
 badlands an eroded and barren region in southwestern South Dakota and northwestern Nebraska
 ballroom large room used mainly for dancing
+bamboo_forest the hard woody stems of bamboo plants; used in construction and crafts and fishing poles
+bamboo_forest woody tropical grass having hollow woody stems; mature canes used for construction and furniture
+bamboo_forest the trees and other plants in a large densely wooded area
+bamboo_forest land that is covered with trees and shrubs
+bamboo_forest establish a forest on previously unforested land
+banquet_hall a ceremonial dinner party for many people
+banquet_hall a meal that is well prepared and greatly enjoyed
+banquet_hall provide a feast or banquet for
+banquet_hall partake in a feast or banquet
+banquet_hall an interior passage or corridor onto which rooms open
+banquet_hall a large entrance or reception room or area
+banquet_hall a large room for gatherings or entertainment
+banquet_hall a college or university building containing living quarters for students
+banquet_hall the large room of a manor or castle
+banquet_hall English writer whose novel about a lesbian relationship was banned in Britain for many years (1883-1943)
+banquet_hall United States child psychologist whose theories of child psychology strongly influenced educational psychology (1844-1924)
+banquet_hall United States chemist who developed an economical method of producing aluminum from bauxite (1863-1914)
+banquet_hall United States explorer who led three expeditions to the Arctic (1821-1871)
+banquet_hall United States astronomer who discovered Phobos and Deimos (the two satellites of Mars) (1829-1907)
+banquet_hall a large and imposing house
+banquet_hall a large building used by a college or university for teaching or research
+banquet_hall a large building for meetings or entertainment
 bar a room or establishment where alcoholic drinks are served over a counter
 bar a counter where you can obtain food or drink
 bar a rigid piece of metal or wood; usually used as a fastening or obstruction or weapon
@@ -75,6 +104,49 @@ bridge an upper deck where a ship is steered and the captain stands
 bridge connect or reduce the distance between
 bridge make a bridge across
 bridge cross over on a bridge
+building_facade a structure that has a roof and walls and stands more or less permanently in one place
+building_facade the act of constructing something
+building_facade the commercial activity involved in repairing old structures or constructing new ones
+building_facade the occupants of a building
+building_facade make by combining materials and parts
+building_facade form or accumulate steadily
+building_facade build or establish something abstract
+building_facade improve the cleansing action of
+building_facade order, supervise, or finance the construction of
+building_facade give form to, according to a plan
+building_facade be engaged in building
+building_facade found or ground
+building_facade bolster or strengthen
+building_facade develop and grow
+building_facade the face or front of a building
+building_facade a showy misrepresentation intended to conceal something unpleasant
+bus_interior a vehicle carrying many passengers; used for public transport
+bus_interior the topology of a network whose components are connected by a busbar
+bus_interior an electrical conductor that makes a common connection between several circuits
+bus_interior a car that is old and unreliable
+bus_interior send or move around by bus
+bus_interior ride in a bus
+bus_interior remove used dishes from the table in restaurants
+bus_interior the region that is inside of something
+bus_interior the inner or enclosed surface of something
+bus_interior the United States federal department charged with conservation and the development of natural resources; created in 1849
+bus_interior situated within or suitable for inside a building
+bus_interior inside the country
+bus_interior located inward
+bus_interior inside and toward a center
+bus_interior of or coming from the middle of a region or country
+butchers_shop a retailer of meat
+butchers_shop a brutal indiscriminate murderer
+butchers_shop a person who slaughters or dresses meat for market
+butchers_shop someone who makes mistakes because of incompetence
+butchers_shop kill (animals) usually for food consumption
+butchers_shop a mercantile establishment for the retail sale of goods or services
+butchers_shop small workplace where handcrafts or manufacturing are done
+butchers_shop a course of instruction in a trade (as carpentry or electricity)
+butchers_shop do one's shopping
+butchers_shop do one's shopping at; do business with; be a customer or client of
+butchers_shop shop around; not necessarily buying
+butchers_shop give away information about somebody
 butte a hill that rises abruptly from the surrounding region; has a flat top and sloping sides
 butte a town in southwestern Montana; center for mining copper
 bakery a workplace where baked goods (breads and cakes and pastries) are produced or sold
@@ -107,8 +179,24 @@ cockpit seat where the driver sits while driving a racing car
 coffee_shop a small restaurant where drinks and snacks are sold
 conference_center a center where conferences can be conducted
 conference_room a room in which a conference can be held
+construction_site the act of constructing something
+construction_site a group of words that form a constituent of a sentence and are considered as a single unit
+construction_site the creation of a construct; the process of combining ideas into a congruous object of thought
+construction_site a thing constructed; a complex entity constructed of many parts
+construction_site drawing a figure satisfying certain conditions as part of solving a problem or proving a theorem
+construction_site an interpretation of a text or action
+construction_site the commercial activity involved in repairing old structures or constructing new ones
+construction_site the piece of land on which something is located (or is to be located)
+construction_site physical position in relation to the surroundings
+construction_site a computer connected to the internet that maintains a series of web pages on the World Wide Web
+construction_site assign a location to
 corn_field a field planted with corn
 corridor an enclosed passageway; rooms usually open onto it
+cottage_garden a small house with a single story
+cottage_garden a plot of ground where plants are cultivated
+cottage_garden the flowers or vegetables or fruits or herbs that are cultivated in a garden
+cottage_garden a yard or lawn adjoining a house
+cottage_garden work in the garden
 courthouse a government building that houses the offices of a county government
 courthouse a building that houses judicial courts
 courtyard an area wholly or partly surrounded by walls or buildings
@@ -164,6 +252,18 @@ fairway a tract of ground free of obstacles to movement
 fire_escape a stairway (often on the outside of a building) that permits exit in the case of fire or other emergency
 fire_station a station housing fire apparatus and firemen
 food_court an area (as in a shopping mall) where fast food is sold (usually around a common eating area)
+forest_path the trees and other plants in a large densely wooded area
+forest_path land that is covered with trees and shrubs
+forest_path establish a forest on previously unforested land
+forest_path a course of conduct
+forest_path a way especially designed for a particular use
+forest_path an established line of travel or access
+forest_path a line or route along which something travels or moves
+forest_road the trees and other plants in a large densely wooded area
+forest_road land that is covered with trees and shrubs
+forest_road establish a forest on previously unforested land
+forest_road an open way (generally public) for travel or transportation
+forest_road a way or means to achieve something
 formal_garden a garden laid out on regular lines with plants arranged in symmetrical locations or in geometrical designs
 fountain a structure from which an artificially produced jet of water arises
 fountain a natural flow of ground water
@@ -236,13 +336,49 @@ hospital_room a room in a hospital for the care of patients
 hot_spring a natural spring of water at a temperature of 70 F or above
 hotel_room a bedroom (usually with bath) in a hotel
 hotel a building where travelers can pay for lodging and meals and other services
+ice_cream_parlor water frozen in the solid state
+ice_cream_parlor the frozen part of a body of water
+ice_cream_parlor diamonds
+ice_cream_parlor a flavored sugar topping used to coat and decorate cakes
+ice_cream_parlor a frozen dessert with fruit flavoring (especially one containing no milk)
+ice_cream_parlor an amphetamine derivative (trade name Methedrine) used in the form of a crystalline hydrochloride; used as a stimulant to the nervous system and as an appetite suppressant
+ice_cream_parlor a heat engine in which combustion occurs inside the engine rather than in a separate furnace; heat expands a gas that either moves a piston or turns a gas turbine
+ice_cream_parlor a rink with a floor of ice for ice hockey or ice skating
+ice_cream_parlor decorate with frosting
+ice_cream_parlor cause to become ice or icy
+ice_cream_parlor put ice on or put on ice
+ice_cream_parlor the best people or things in a group
+ice_cream_parlor the part of milk containing the butterfat
+ice_cream_parlor toiletry consisting of any of various substances in the form of a thick liquid that have a soothing and moisturizing effect when applied to the skin
+ice_cream_parlor make creamy by beating
+ice_cream_parlor beat thoroughly and conclusively in a competition or fight
+ice_cream_parlor put on cream, as on one's face or body
+ice_cream_parlor remove from the surface
+ice_cream_parlor add cream to one's coffee, for example
+ice_cream_parlor reception room in an inn or club where visitors can be received
+ice_cream_parlor a room in a private house or establishment where people can sit and talk and relax
 iceberg a large mass of ice floating at sea; usually broken off of a polar glacier
 iceberg lettuce with crisp tightly packed light-green leaves in a firm head
 igloo an Eskimo hut; usually built of blocks (of sod or snow) in the shape of a dome
 islet a small island
+ice_skating_rink water frozen in the solid state
+ice_skating_rink the frozen part of a body of water
+ice_skating_rink diamonds
+ice_skating_rink a flavored sugar topping used to coat and decorate cakes
+ice_skating_rink a frozen dessert with fruit flavoring (especially one containing no milk)
+ice_skating_rink an amphetamine derivative (trade name Methedrine) used in the form of a crystalline hydrochloride; used as a stimulant to the nervous system and as an appetite suppressant
+ice_skating_rink a heat engine in which combustion occurs inside the engine rather than in a separate furnace; heat expands a gas that either moves a piston or turns a gas turbine
+ice_skating_rink a rink with a floor of ice for ice hockey or ice skating
+ice_skating_rink decorate with frosting
+ice_skating_rink cause to become ice or icy
+ice_skating_rink put ice on or put on ice
+ice_skating_rink the sport of gliding on skates
+ice_skating_rink move along on skates
+ice_skating_rink building that contains a surface for ice skating or roller skating
 inn a hotel providing overnight lodging for travelers
 jail_cell a room where a prisoner is kept
 kasbah an older or native quarter of many cities in northern Africa; the quarter in which the citadel is located
+kindergarden_classroom a room in a school where lessons take place
 kitchen a room equipped for preparing meals
 kitchenette small kitchen
 laundromat a self-service laundry (service mark Laundromat) where coin-operated washing machines are available to individual customers
@@ -258,12 +394,35 @@ mansion a large and imposing house
 marsh low-lying wet land with grassy vegetation; usually is a transition zone between land and water
 marsh United States painter (1898-1954)
 marsh New Zealand writer of detective stories (1899-1982)
+martial_arts_gym Roman poet noted for epigrams (first century BC)
+martial_arts_gym (of persons) befitting a warrior
+martial_arts_gym suggesting war or military life
+martial_arts_gym of or relating to the armed forces
+martial_arts_gym studies intended to provide general knowledge and intellectual skills (rather than occupational or professional skills)
+martial_arts_gym the products of human creativity; works of art collectively
+martial_arts_gym the creation of beautiful or significant things
+martial_arts_gym a superior skill that you can learn by study and practice and observation
+martial_arts_gym photographs or other visual representations in a printed publication
+martial_arts_gym athletic facility equipped for sports or physical training
 mausoleum a large burial chamber, usually above ground
 medina a city in western Saudi Arabia; site of the tomb of Muhammad; the second most holy city of Islam
 medina the ancient quarter of many cities in northern Africa
 motel a motor hotel
 mountain a land mass that projects well above its surroundings; higher than a hill
 mountain (often followed by `of') a large number or amount or extent
+mountain_snowy a land mass that projects well above its surroundings; higher than a hill
+mountain_snowy (often followed by `of') a large number or amount or extent
+mountain_snowy marked by the presence of snow
+mountain_snowy covered with snow
+mountain_snowy of the white color of snow
+music_studio an artistic form of auditory communication incorporating instrumental or vocal tones in a structured and continuous manner
+music_studio any agreeable (pleasing and harmonious) sounds
+music_studio musical activity (singing or whistling etc.)
+music_studio (music) the sounds produced by singers or musical instruments (or reproductions of such sounds)
+music_studio punishment for one's actions
+music_studio workplace for the teaching or practice of an art
+music_studio an apartment with a living space and a bathroom and a small kitchen
+music_studio workplace consisting of a room or building where movies or television shows or radio programs are produced and recorded
 market the world of commercial activity where goods and services are bought and sold
 market the customers for a particular product or service
 market a marketplace where groceries are sold
@@ -324,9 +483,36 @@ reception a formal party of people; as after a wedding
 reception quality or fidelity of a received broadcast
 reception the act of receiving
 reception (American football) the act of catching a pass in football
+residential_neighborhood used or designed for residence or limited to residences
+residential_neighborhood of or relating to or connected with residence
+residential_neighborhood a surrounding or nearby region
+residential_neighborhood people living near one another
+residential_neighborhood the approximate amount of something (usually used prepositionally as in `in the region of')
+residential_neighborhood an area within a city or town that has some distinctive features (especially one forming a community)
 restaurant a building where people go to eat
+restaurant_kitchen a building where people go to eat
+restaurant_kitchen a room equipped for preparing meals
+restaurant_patio a building where people go to eat
+restaurant_patio usually paved outdoor area adjoining a residence
 rice_paddy an irrigated or flooded field where rice is grown
 river a large natural stream of water (larger than a creek)
+rock_arch a lump or mass of hard consolidated mineral matter
+rock_arch material consisting of the aggregate of minerals like those making up the Earth's crust
+rock_arch United States gynecologist and devout Catholic who conducted the first clinical trials of the oral contraceptive pill (1890-1984)
+rock_arch (figurative) someone who is strong and stable and dependable
+rock_arch hard bright-colored stick candy (typically flavored with peppermint)
+rock_arch a genre of popular music originating in the 1950s; a blend of black rhythm-and-blues with white country-and-western
+rock_arch pitching dangerously to one side
+rock_arch move back and forth or sideways
+rock_arch cause to move back and forth
+rock_arch a curved shape in the vertical plane that spans an opening
+rock_arch a curved bony structure supporting or enclosing organs (especially the inner sides of the feet)
+rock_arch a passageway under a curved masonry construction
+rock_arch (architecture) a masonry construction (usually curved) for spanning an opening and supporting the weight above it
+rock_arch form an arch or curve
+rock_arch (used of behavior or attitude) characteristic of those who treat others with condescension
+rock_arch expert in skulduggery
+rock_arch naughtily or annoyingly playful
 rope_bridge a bridge consisting of ropes
 ruin an irrecoverable state of devastation and destruction
 ruin a ruined building
@@ -346,6 +532,10 @@ runway a narrow platform extending from the stage into the audience in a theater
 runway a strip of level paved surface where planes can take off and land
 sandbar a bar of sand
 schoolhouse a building where young people receive education
+sea_cliff a division of an ocean or a large body of salt water partially enclosed by land
+sea_cliff anything apparently limitless in quantity or volume
+sea_cliff turbulent water with swells of considerable size
+sea_cliff a steep high face of rock
 shed an outbuilding with a single story; used for shelter or storage
 shed get rid of
 shed pour out in drops or small quantities or as if in drops or small quantities
@@ -393,10 +583,41 @@ stage perform (a play), especially on a stage
 stage plan, organize, and carry out (an event)
 subway_station a terminal where subways load and unload passengers
 swimming_pool pool that provides a facility for swimming
+television_studio broadcasting visual images of stationary or moving objects
+television_studio a telecommunication system that transmits images of objects (stationary or moving) between distant points
+television_studio an electronic device that receives television signals and displays them on a screen
+television_studio workplace for the teaching or practice of an art
+television_studio an apartment with a living space and a bathroom and a small kitchen
+television_studio workplace consisting of a room or building where movies or television shows or radio programs are produced and recorded
+topiary_garden a garden having shrubs clipped or trimmed into decorative shapes especially of animals
+topiary_garden making decorative shapes by trimming shrubs or trees
+topiary_garden a plot of ground where plants are cultivated
+topiary_garden the flowers or vegetables or fruits or herbs that are cultivated in a garden
+topiary_garden a yard or lawn adjoining a house
+topiary_garden work in the garden
 tower a structure taller than its diameter; can stand alone or be attached to a larger building
 tower anything that approximates the shape of a column or tower
 tower a powerful small boat designed to pull or push larger ships
 tower appear very large or occupy a commanding position
+train_railway public transport provided by a line of railway cars coupled together and drawn by a locomotive
+train_railway a sequentially ordered set of things or events or ideas in which each successive member is related to the preceding
+train_railway a procession (of wagons or mules or camels) traveling together in single file
+train_railway a series of consequences wrought by an event
+train_railway piece of cloth forming the long back section of a gown that is drawn along the floor
+train_railway wheelwork consisting of a connected set of rotating gears by which force is transmitted or motion or torque is changed
+train_railway create by training and teaching
+train_railway undergo training or instruction in preparation for a particular role, function, or profession
+train_railway develop (children's) behavior by instruction and practice; especially to teach self-control
+train_railway educate for a future role or function
+train_railway teach or refine to be discriminative in taste or judgment
+train_railway point or cause to go (blows, weapons, or objects such as photographic equipment) towards
+train_railway teach and supervise (someone); act as a trainer or coach (to), as in sports
+train_railway exercise in order to prepare for an event or competition
+train_railway cause to grow in a certain way by tying and pruning it
+train_railway travel by rail or train
+train_railway drag loosely along a surface; allow to sweep the ground
+train_railway line that is the commercial organization responsible for operating a system of transportation for trains that pull passengers or freight
+train_railway a line of track providing a runway for wheels
 tree_farm a forest (or part of a forest) where trees are grown for commercial use
 trench a ditch dug as a fortification having a parapet of the excavated earth
 trench a long steep-sided depression in the ocean floor

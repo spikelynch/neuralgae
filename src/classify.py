@@ -23,6 +23,8 @@ import neuralgae
 import caffe
 import random
 
+
+
 DEFAULT_MODEL = 'caffenet'
 
 CLASSES = './classes.txt'
@@ -80,16 +82,24 @@ def classify(model_label, image, n):
 
     net.blobs['data'].data[...] = transformer.preprocess('data', caffe.io.load_image(image))
     out = net.forward()
-    targets = []
-    nclasses = int(n) + 1
     layer = 'prob'
     if model_label in LAYERS:
         layer = LAYERS[model_label] 
     top_k = net.blobs[layer].data[0].flatten().argsort()
-    #print net.blobs[layer].data[0]
-    for i in top_k[-1:-nclasses:-1]:
-        targets.append(i)
-    return targets
+    if n:
+        targets = []
+        nclasses = int(n) + 1
+        for i in top_k[-1:-nclasses:-1]:
+            targets.append(i)
+        return targets
+    else:
+        #print net.blobs[layer].data[0]
+        targets = {}
+        i = 0
+        for d in net.blobs[layer].data[0]:
+            targets[i] = d.item()
+            i += 1 
+        return targets
 
 def classify_remote(model, image, n, cf):
     """Runs the classify on a remote server"""
@@ -99,7 +109,9 @@ def classify_remote(model, image, n, cf):
     imagecp = os.path.join(cf['remotedir'], filename)
     command = ' '.join([ "source /etc/profile;", script, model, imagecp, str(n)])
     out = subprocess.check_output(["ssh", "-p", cf['port'], cf['host'], command])
-    results = [int(s) for s in out.split(',')]
+    #results = [int(s) for s in out.split(',')]
+    results = json.loads(out)
+    print results
     return results
 
         
@@ -116,8 +128,13 @@ if __name__ == '__main__':
         sys.exit(-1)
     image = args.image
     classes = args.classes
-    classes = classify(model, image, classes)
-    print ','.join([ str(c) for c in classes])
+    if int(classes) > 0:
+        targets = classify(model, image, classes)
+        #print ','.join([ str(c) for c in targets])
+        print json.dumps(targets)
+    else:
+        targets = classify(model, image, None)
+        print json.dumps(targets)
 
             
 

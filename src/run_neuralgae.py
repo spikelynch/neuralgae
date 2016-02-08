@@ -6,7 +6,7 @@ import subprocess
 import os.path
 import shutil
 import json
-import random, math
+import random, math, itertools
 import argparse
 from neuralgae import ImageCategories
 import neuralgae
@@ -57,6 +57,16 @@ def interpolate_cf(cf, k):
     return frame_cf
     
 
+def model_iter(cfm):
+    l = cfm.split(',')
+    return itertools.cycle(l)
+
+def class_names(model, t):
+    imagen = ImageCategories(model)
+    return ', '.join([imagen.name(c) for c in t])
+
+    
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=100, help="Number of frames to generate")
@@ -83,7 +93,6 @@ else:
     remote_cf = None
     
 imagen = ImageCategories(cf['model'])
-max_targets = NTARGETS[cf['model']]
 
 cfdump = os.path.join(args.outdir, 'global.conf')
 with open(cfdump, 'w') as cfd:
@@ -91,24 +100,29 @@ with open(cfdump, 'w') as cfd:
     
 classes = ""
 
+mi = model_iter(cf['model'])
+
 if args.initial:
+    model = mi.next()
     base = args.initial
     lastimage = "%s.jpg" % base
     initconf = "%s.json" % base
     t = neuralgae.read_config(initconf)
     if t:
         print t
-        classes = ', '.join([imagen.name(c) for c in t])
+        classes = class_names(model, t)
 else:
-    start_targets = random.sample(range(0, max_targets), cf['nstart'])
+    model = mi.next()
+    start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
     conffile = os.path.join(args.outdir, 'conf0.json')
     print "Config file: %s " % conffile
     cf['targets'] = ','.join([ str(x) for x in start_targets ])
     frame_cf = interpolate_cf(cf, 0)
+    frame_cf['model'] = model
     neuralgae.write_config(frame_cf, conffile)
     subprocess.call(["./draw.sh", args.outdir, 'image0', conffile, str(cf['size']), str(int(frame_cf['scale'])), str(int(frame_cf['blend']))])
     lastimage = os.path.join(args.outdir, 'image0.jpg')
-    classes = ', '.join([imagen.name(c) for c in start_targets])
+    classes = class_names(model, start_targets)
 
 
 
@@ -120,24 +134,26 @@ print "lastimage = %s" % lastimage
 print "generating %d frames" % args.number
 
 for i in range(1, args.number + 1):
+    model = mi.next()
     jsonfile = os.path.join(args.outdir, "conf%d.json" % i)
     targets = []
     if remote_cf:
-        targets = classify.classify_remote(cf['model'], lastimage, cf['ntween'], remote_cf)
+        targets = classify.classify_remote(model, lastimage, cf['ntween'], remote_cf)
     else:
-        targets = classify.classify(cf['model'], lastimage, cf['ntween'])
+        targets = classify.classify(model, lastimage, cf['ntween'])
     if cf['nsample'] < cf['ntween']:
         targets = random.sample(targets, cf['nsample'])
     print targets
     cf['targets'] = ','.join([ str(x) for x in targets ])
     frame_cf = interpolate_cf(cf, 1.0 * i / (args.number + 1))
+    frame_cf['model'] = model
     neuralgae.write_config(frame_cf, jsonfile)
     subprocess.call(["./draw.sh", args.outdir, "image%d" % i, jsonfile, str(cf['size']), str(int(frame_cf['scale'])), str(int(frame_cf['blend']))])
     lastimage = os.path.join(args.outdir, "image%d.jpg" % i)
     t = neuralgae.read_config(jsonfile)
     if t:
         print t
-        classes = ', '.join([imagen.name(c) for c in t])
+        classes = class_names(model, t)
     else:
         classes = ""
     with open(outfile, 'a') as f:
