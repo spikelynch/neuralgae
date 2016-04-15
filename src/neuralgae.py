@@ -9,16 +9,9 @@ CLASS_RE = {
     }
 
 def write_config(details, outf):
-
-#    details = {}
-#    details['targets'] = ','.join([str(x) for x in targets])
-
-    with open(TEMPLATE, 'r') as t:
-        template = t.read()
-        jscf = pystache.render(template, details)
-        with open(outf, 'w') as o:
-            o.write(jscf)
-            print "Wrote to %s" % outf
+    with open(outf, 'w') as o:
+        json.dump(details, o)
+        print "Wrote to %s" % outf
 
 def read_config(jsonfile):
     with open(jsonfile, 'r') as f:

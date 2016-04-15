@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
-import nltk, random, re, argparse, sys, os.path
+import nltk, random, re, argparse, sys, os.path, itertools
 
 
 DEFINITIONS = './Definitions'
@@ -15,6 +15,20 @@ def makePairs(arr):
             temp = (arr[i], arr[i+1])
             pairs.append(temp)
     return pairs
+
+
+def makeCfd(m):
+    deffile = os.path.join(DEFINITIONS, '%s.txt' % m)
+    if not os.path.isfile(deffile):
+        print "Can't find %s" % deffile
+        sys.exit(-1)
+    with open(deffile, 'r') as f:
+        corpus = f.read()
+        corpus = corpus.split()
+        pairs = makePairs(corpus)
+        cfd = nltk.ConditionalFreqDist(pairs)
+    return cfd
+
 
 def generate(cfd, word = 'the', num = 50):
     words = []
@@ -50,7 +64,7 @@ def make_tweet(cfd, words, num):
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=LINELENGTH,help="Words per line")
 parser.add_argument("-t", "--tweets", action='store_true', help="Limit output to %s characters" % TWEET_CHARS)
-parser.add_argument("-m", "--model", type=str, default="googlenet", help="Model name (for definitions)")
+parser.add_argument("-m", "--model", type=str, default="googlenet", help="Model name (for definitions) (to alternate use model1,model2")
 parser.add_argument("logfile",  type=str, help="Log file from neuralgia_control")
 
 
@@ -60,42 +74,32 @@ if not os.path.isfile(args.logfile):
     print "Could not read %s" % args.logfile
     sys.exit(-1)
 
+cfds = [ makeCfd(m) for m in args.model.split(',') ]
 
-deffile = os.path.join(DEFINITIONS, '%s.txt' % args.model)
+cfdi = itertools.cycle(cfds)
 
-if not os.path.isfile(deffile):
-    print "Can't find %s" % deffile
-    sys.exit(-1)
-    
+line_re = re.compile('^(.*): (.*)$')
 
-
-with open(deffile, 'r') as f:
-    corpus = f.read()
-    corpus = corpus.split()
-    pairs = makePairs(corpus)
-    cfd = nltk.ConditionalFreqDist(pairs)
-
-    line_re = re.compile('^(.*): (.*)$')
-
-    with open(args.logfile, 'r') as lf:
-        for l in lf:
-            m = line_re.match(l)
-            if m:
-                image = m.group(1)
-                bits = m.group(2)
-                words = bits.split(', ')
-                if args.tweets:
-                    tweet = make_tweet(cfd, words, args.number)
-                    print "%s:%s" % ( image, tweet )
-                else:
-                    print image
-                    for w in words:
-                        start = w.replace(' ', '_')
-                        try:
-                            line = ' '.join(generate(cfd, start, args.number))
-                        except IndexError as e:
-                            print "ERROR: %s %s" % ( start, e )
-                        print line.replace('_', ' ')
+with open(args.logfile, 'r') as lf:
+    for l in lf:
+        m = line_re.match(l)
+        if m:
+            cfd = cfdi.next()
+            image = m.group(1)
+            bits = m.group(2)
+            words = bits.split(', ')
+            if args.tweets:
+                tweet = make_tweet(cfd, words, args.number)
+                print "%s:%s" % ( image, tweet )
+            else:
+                print image
+                for w in words:
+                    start = w.replace(' ', '_')
+                    try:
+                        line = ' '.join(generate(cfd, start, args.number))
+                    except IndexError as e:
+                        print "ERROR: %s %s" % ( start, e )
+                    print line.replace('_', ' ')
                     print "\n"
 
 

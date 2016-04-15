@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 
 import sys
@@ -25,8 +25,8 @@ DEFAULTS = {
     'nstart': 3,
     'ntween': 50,
     'nsample': 3,
-    'scale': 80,
-    'blend': 60,
+    'bg_script': 'bg_perlin1.sh',
+    'bg_params': [ '80', '60' ],
     'model': 'googlenet',
     'size': 224,
     'iters': 300,
@@ -61,12 +61,51 @@ def model_iter(cfm):
     l = cfm.split(',')
     return itertools.cycle(l)
 
+def do_classify(cf, remote_cf, model, lastimage):
+    if cf['weighted']:
+        return do_classify_weighted(cf, remote_cf, model, lastimage)
+    targets = []
+    if remote_cf:
+        targets = classify.classify_remote(model, lastimage, cf['ntween'], remote_cf)
+    else:
+        targets = classify.classify(model, lastimage, cf['ntween'])
+    if cf['nsample'] < cf['ntween']:
+        targets = random.sample(targets, cf['nsample'])
+    print targets
+    return ','.join([ str(x) for x in targets ])
+
+def do_classify_weighted(cf, remote_cf, model, lastimage):
+    if remote_cf:
+        t = classify.classify_remote(model, lastimage, 0, remote_cf)
+    else:
+        t = classify.classify(model, lastimage, 0)
+    targets = dict(sorted(t.items(), key=lambda x: -x[1])[:cf['ntween']])
+    if cf['nsample'] < cf['ntween']:
+        ts = random.sample(targets.keys(), cf['nsample'])
+        ots = targets
+        targets = { t:ots[t] for t in ts }
+    print targets
+    return targets
+
+
 def class_names(model, t):
     imagen = ImageCategories(model)
     return ', '.join([imagen.name(c) for c in t])
 
-    
 
+def make_background(cf, bgfile):
+    bg_script = './' + cf['bg_script']
+    bg_params = cf['bg_params']
+    args = [ bg_script, bgfile, str(cf['size']) ] + bg_params
+    print args
+    subprocess.call(args)
+    sys.exit(-1)
+        
+def deepdraw(conffile, infile, outdir, outfile):
+    dd = [ './dream.py', '--config', conffile, '--basefile', outfile, infile, outdir ]
+    print "deepdraw %s" % dd
+    subprocess.call(dd)
+    return os.path.join(outdir, outfile) + '.jpg'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=100, help="Number of frames to generate")
@@ -116,12 +155,13 @@ else:
     start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
     conffile = os.path.join(args.outdir, 'conf0.json')
     print "Config file: %s " % conffile
-    cf['targets'] = ','.join([ str(x) for x in start_targets ])
-    frame_cf = interpolate_cf(cf, 0)
+    cf['target'] = ','.join([ str(x) for x in start_targets ])
+    frame_cf = cf # interpolate_cf(cf, 0)
     frame_cf['model'] = model
-    neuralgae.write_config(frame_cf, conffile)
-    subprocess.call(["./draw.sh", args.outdir, 'image0', conffile, str(cf['size']), str(int(frame_cf['scale'])), str(int(frame_cf['blend']))])
-    lastimage = os.path.join(args.outdir, 'image0.jpg')
+    neuralgae.write_config(cf, conffile)
+    make_background(cf, 'bg0.jpg')
+    lastimage = deepdraw(conffile, 'bg0.jpg', args.outdir, 'image0')
+    #sys.exit(-1)
     classes = class_names(model, start_targets)
 
 
@@ -136,20 +176,13 @@ print "generating %d frames" % args.number
 for i in range(1, args.number + 1):
     model = mi.next()
     jsonfile = os.path.join(args.outdir, "conf%d.json" % i)
-    targets = []
-    if remote_cf:
-        targets = classify.classify_remote(model, lastimage, cf['ntween'], remote_cf)
-    else:
-        targets = classify.classify(model, lastimage, cf['ntween'])
-    if cf['nsample'] < cf['ntween']:
-        targets = random.sample(targets, cf['nsample'])
-    print targets
-    cf['targets'] = ','.join([ str(x) for x in targets ])
-    frame_cf = interpolate_cf(cf, 1.0 * i / (args.number + 1))
+    cf['target'] = do_classify(cf, remote_cf, model, lastimage)
+    frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
     frame_cf['model'] = model
     neuralgae.write_config(frame_cf, jsonfile)
-    subprocess.call(["./draw.sh", args.outdir, "image%d" % i, jsonfile, str(cf['size']), str(int(frame_cf['scale'])), str(int(frame_cf['blend']))])
-    lastimage = os.path.join(args.outdir, "image%d.jpg" % i)
+    make_background(frame_cf, 'bg.jpg')
+    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, 'image%d' % i)
+    
     t = neuralgae.read_config(jsonfile)
     if t:
         print t

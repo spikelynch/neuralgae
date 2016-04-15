@@ -1,11 +1,12 @@
 {
-    "scale": 20,
-    "blend": 98, 
+    "bg_script": "bg_gradient.sh",
+    "bg_params": [ "color", "25", "10", "20%,80%", "5x10" ],
+    "weighted": 1,
     "size": 224,
     "model": "googlenet",
-    "sigma": 0.37,
+    "sigma": 0.33,
     "iters": 300,
-    "nstart": 4,
-    "ntween": 10,
-    "nsample": 4
+    "nstart": 6,
+    "ntween": 8,
+    "nsample": 6
 }

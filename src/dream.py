@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # imports and basic notebook setup
 from cStringIO import StringIO
 import numpy as np
@@ -517,11 +517,17 @@ def write_json(bfile, args):
 # default octaves stored in a config file somewhere (actually all
 # defaults)?
 
-def read_json(jfile):
+# this now takes the command line arg values which are not overriden
+# in the config
+
+def read_json(clargs):
     a = argparse.Namespace()
-    with open(jfile, 'rb') as jf:
+    with open(clargs.config, 'rb') as jf:
         data = json.load(jf)
         for arg, value in data.iteritems():
+            a.__setattr__(arg, value)
+    for arg, value in vars(clargs).iteritems():
+        if not arg in a:
             a.__setattr__(arg, value)
     return a
 
@@ -588,7 +594,7 @@ if __name__ == '__main__':
         if not os.path.isfile(args.config):
             print "Config file %s not found" % args.config
             sys.exit(-1)
-        args = read_json(args.config)
+        args = read_json(args)
         write_conf = False
 
     if args.target:

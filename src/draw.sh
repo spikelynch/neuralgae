@@ -2,6 +2,12 @@
 
 # draw.sh $OUTDIR $BASEFILE $CONFIG $SIZE $SCALE $BLEND
 
+# separate to
+
+# perlin.sh $SIZE $FILE $SCALE $BLEND
+#./dream.py --config $config --basefile ${output} ${working}/base.jpg ${outdir}
+
+
 working="./working"
 outdir=$1
 output=$2
