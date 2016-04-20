@@ -16,8 +16,7 @@ def write_config(details, outf):
 def read_config(jsonfile):
     with open(jsonfile, 'r') as f:
         js = json.load(f)
-        t = js['target']
-        return [int(i) for i in t.split(',')]
+        return js['target']
     return None
 
 

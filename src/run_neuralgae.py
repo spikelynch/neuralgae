@@ -93,13 +93,34 @@ def class_names(model, t):
     return ', '.join([imagen.name(c) for c in t])
 
 
+def format_target(v):
+    if type(v) == float:
+        v = "%.5f" % v
+    else:
+        v = str(v)
+    return v
+
+
+def log_line(image, model, t):
+    imagen = ImageCategories(model)
+    td = t
+    if not type(t) == dict:
+        td = { int(i): 1 for i in t }
+    else:
+        td = { int(i): v for (i, v) in t.iteritems() }
+    nd = { imagen.name(i): v for (i, v) in td.iteritems() }
+    nld = sorted(nd.items(), key=lambda x: -x[1])
+    row = [ str(e) for l in nld for e in l ]
+    return image + ',' + ','.join(row) + "\n"
+#         [int(i) for i in t.keys()]
+
+
 def make_background(cf, bgfile):
     bg_script = './' + cf['bg_script']
     bg_params = cf['bg_params']
     args = [ bg_script, bgfile, str(cf['size']) ] + bg_params
     print args
     subprocess.call(args)
-    sys.exit(-1)
         
 def deepdraw(conffile, infile, outdir, outfile):
     dd = [ './dream.py', '--config', conffile, '--basefile', outfile, infile, outdir ]
@@ -108,10 +129,11 @@ def deepdraw(conffile, infile, outdir, outfile):
     return os.path.join(outdir, outfile) + '.jpg'
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-n", "--number", type=int, default=100, help="Number of frames to generate")
+parser.add_argument("-n", "--number", type=int, default=42, help="Number of frames to generate")
 parser.add_argument("-i", "--initial", type=str, default=None, help="Initial image - if not supplied, will start with a random image")
 parser.add_argument("-c", "--config", type=str, default=None, help="Global config file")
 parser.add_argument("-r", "--remote", type=str, default=None, help="Remote classify parameters")
+parser.add_argument("-s", "--static", action='store_true', help="Same base image for all frames", default=False)
 parser.add_argument("outdir",       type=str, help="Output directory")
 parser.add_argument("outfile",      type=str, help="File to log image classes")
 
@@ -137,19 +159,17 @@ cfdump = os.path.join(args.outdir, 'global.conf')
 with open(cfdump, 'w') as cfd:
     json.dump(cf, cfd, indent=4)
     
-classes = ""
 
 mi = model_iter(cf['model'])
+
+start_targets = None
 
 if args.initial:
     model = mi.next()
     base = args.initial
     lastimage = "%s.jpg" % base
     initconf = "%s.json" % base
-    t = neuralgae.read_config(initconf)
-    if t:
-        print t
-        classes = class_names(model, t)
+    start_targets = neuralgae.read_config(initconf)
 else:
     model = mi.next()
     start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
@@ -159,35 +179,28 @@ else:
     frame_cf = cf # interpolate_cf(cf, 0)
     frame_cf['model'] = model
     neuralgae.write_config(cf, conffile)
-    make_background(cf, 'bg0.jpg')
-    lastimage = deepdraw(conffile, 'bg0.jpg', args.outdir, 'image0')
+    make_background(cf, 'bg.jpg')
+    lastimage = deepdraw(conffile, 'bg.jpg', args.outdir, 'image0')
     #sys.exit(-1)
-    classes = class_names(model, start_targets)
-
-
-
+    
 with open(outfile, 'w') as f:
-    f.write("%s: %s\n" % (lastimage, classes))
+    f.write(log_line(lastimage, model, start_targets))
 
 print "lastimage = %s" % lastimage
 
 print "generating %d frames" % args.number
 
-for i in range(1, args.number + 1):
+for i in range(1, args.number):
     model = mi.next()
     jsonfile = os.path.join(args.outdir, "conf%d.json" % i)
     cf['target'] = do_classify(cf, remote_cf, model, lastimage)
     frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
     frame_cf['model'] = model
     neuralgae.write_config(frame_cf, jsonfile)
-    make_background(frame_cf, 'bg.jpg')
+    if not args.static:
+        make_background(frame_cf, 'bg.jpg')
     lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, 'image%d' % i)
     
-    t = neuralgae.read_config(jsonfile)
-    if t:
-        print t
-        classes = class_names(model, t)
-    else:
-        classes = ""
+    targets = neuralgae.read_config(jsonfile)
     with open(outfile, 'a') as f:
-        f.write("%s: %s\n" % (lastimage, classes))
+        f.write(log_line(lastimage, model, targets))

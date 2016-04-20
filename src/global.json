@@ -1,12 +1,12 @@
 {
     "bg_script": "bg_gradient.sh",
-    "bg_params": [ "color", "25", "10", "20%,80%", "5x10" ],
+    "bg_params": [ "color", "25", "65", "20%,90%", "5x10" ],
     "weighted": 1,
     "size": 224,
     "model": "googlenet",
-    "sigma": 0.33,
+    "sigma": 0.35,
     "iters": 300,
     "nstart": 6,
-    "ntween": 8,
+    "ntween": 9,
     "nsample": 6
 }
