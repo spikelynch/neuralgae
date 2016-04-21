@@ -3,9 +3,23 @@
 import nltk, random, re, argparse, sys, os.path, itertools
 
 
+
 DEFINITIONS = './Definitions'
 LINELENGTH = 6
 TWEET_CHARS = 116
+OLD_LINE_RE = re.compile('^(.*): (.*)$')
+
+def parse_line(l):
+    m = OLD_LINE_RE.match(l)
+    if m:
+        image = m.group(1)
+        bits = m.group(2)
+        words = bits.split(', ')
+        return image, words
+    bits = l.split(',')
+    image = bits[0]
+    words = [ bits[n] for n in range(0, len(bits)) if n % 2 ]
+    return image, words
 
 
 def makePairs(arr):
@@ -28,7 +42,6 @@ def makeCfd(m):
         pairs = makePairs(corpus)
         cfd = nltk.ConditionalFreqDist(pairs)
     return cfd
-
 
 def generate(cfd, word = 'the', num = 50):
     words = []
@@ -78,29 +91,24 @@ cfds = [ makeCfd(m) for m in args.model.split(',') ]
 
 cfdi = itertools.cycle(cfds)
 
-line_re = re.compile('^(.*): (.*)$')
 
 with open(args.logfile, 'r') as lf:
     for l in lf:
-        m = line_re.match(l)
-        if m:
-            cfd = cfdi.next()
-            image = m.group(1)
-            bits = m.group(2)
-            words = bits.split(', ')
-            if args.tweets:
-                tweet = make_tweet(cfd, words, args.number)
-                print "%s:%s" % ( image, tweet )
-            else:
-                print image
-                for w in words:
-                    start = w.replace(' ', '_')
-                    try:
-                        line = ' '.join(generate(cfd, start, args.number))
-                    except IndexError as e:
-                        print "ERROR: %s %s" % ( start, e )
-                    print line.replace('_', ' ')
-                    print "\n"
+        image, words = parse_line(l)
+        cfd = cfdi.next()
+        if args.tweets:
+            tweet = make_tweet(cfd, words, args.number)
+            print "%s:%s" % ( image, tweet )
+        else:
+            print image
+            for w in words:
+                start = w.replace(' ', '_')
+                try:
+                    line = ' '.join(generate(cfd, start, args.number))
+                except IndexError as e:
+                    print "ERROR: %s %s" % ( start, e )
+                print line.replace('_', ' ')
+                print "\n"
 
 
 
