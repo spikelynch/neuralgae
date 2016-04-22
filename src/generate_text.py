@@ -9,17 +9,22 @@ LINELENGTH = 6
 TWEET_CHARS = 116
 OLD_LINE_RE = re.compile('^(.*): (.*)$')
 
-def parse_line(l):
+def parse_line(l, model):
+    """model = True - if this is true get model from the file"""
     m = OLD_LINE_RE.match(l)
     if m:
         image = m.group(1)
         bits = m.group(2)
         words = bits.split(', ')
-        return image, words
+        return image, words, None
     bits = l.split(',')
     image = bits[0]
+    m = None
+    if model:
+        m = bits[1]
+        bits = bits[1:]
     words = [ bits[n] for n in range(0, len(bits)) if n % 2 ]
-    return image, words
+    return image, words, m
 
 
 def makePairs(arr):
@@ -77,7 +82,7 @@ def make_tweet(cfd, words, num):
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=LINELENGTH,help="Words per line")
 parser.add_argument("-t", "--tweets", action='store_true', help="Limit output to %s characters" % TWEET_CHARS)
-parser.add_argument("-m", "--model", type=str, default="googlenet", help="Model name (for definitions) (to alternate use model1,model2")
+parser.add_argument("-m", "--model", type=str, default=None, help="Model name (to alternate use model1,model2)")
 parser.add_argument("logfile",  type=str, help="Log file from neuralgia_control")
 
 
@@ -87,15 +92,28 @@ if not os.path.isfile(args.logfile):
     print "Could not read %s" % args.logfile
     sys.exit(-1)
 
-cfds = [ makeCfd(m) for m in args.model.split(',') ]
-
-cfdi = itertools.cycle(cfds)
-
+cfdi = None
+cfds = {}
+filemodel = True
+if args.model:
+    cfds = [ makeCfd(m) for m in args.model.split(',') ]
+    cfdi = itertools.cycle(cfds)
+    filemodel = False
+  
 
 with open(args.logfile, 'r') as lf:
     for l in lf:
-        image, words = parse_line(l)
-        cfd = cfdi.next()
+        image, words, m = parse_line(l, filemodel)
+        if cfdi:
+            cfd = cfdi.next()
+        else:
+            if m:
+                if not m in cfds:
+                    cfds[m] = makeCfd(m)
+                cfd = cfds[m]
+            else:
+                print "Couldn't work out a model for line\n%s\n\n" % l
+                sys.exit(-1)
         if args.tweets:
             tweet = make_tweet(cfd, words, args.number)
             print "%s:%s" % ( image, tweet )

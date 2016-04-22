@@ -111,7 +111,8 @@ def log_line(image, model, t):
     nd = { imagen.name(i): v for (i, v) in td.iteritems() }
     nld = sorted(nd.items(), key=lambda x: -x[1])
     row = [ str(e) for l in nld for e in l ]
-    return image + ',' + ','.join(row) + "\n"
+    row = [ image, model ] + row
+    return ','.join(row) + "\n"
 #         [int(i) for i in t.keys()]
 
 

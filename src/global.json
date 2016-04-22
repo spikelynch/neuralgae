@@ -5,13 +5,13 @@
     "nsample": 6, 
     "iters": 300, 
     "bg_script": "bg_gradient.sh", 
-    "model": "places,places,places,places,googlenet,googlenet,googlenet,googlenet", 
+    "model": "googlenet,googlenet,googlenet,googlenet,places", 
     "bg_params": [
-        "color", 
+        "gray", 
         "25", 
-        "35", 
-        "20%,80%", 
-        "5x10"
+        "10", 
+        "10%,90%", 
+        "1x10"
     ], 
     "sigma": 0.35, 
     "size": 224
