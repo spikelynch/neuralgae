@@ -3,7 +3,9 @@
 ## Update
 
 I've updated the source code to include two of the bash scripts used
-to create the background images.
+to create the background images. They are the directory
+[src/Backgrounds](src/Backgrounds). Note that these both depend on the
+[ImageMagick software swuite](http://www.imagemagick.org/) and [Fred Weinhaus' Perlin noise script](http://www.fmwconcepts.com/imagemagick/perlin/index.php).
 
 ## Neuralgae
 
