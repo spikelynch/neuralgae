@@ -1,5 +1,12 @@
 # Neuralgae
 
+## Update
+
+I've updated the source code to include two of the bash scripts used
+to create the background images.
+
+## Neuralgae
+
 A full version of Neuralgae is now online: [http://neuralgae.mikelynch.org/](http://neuralgae.mikelynch.org/)
 
 My original idea for NaNoGenMo15 was to try to apply an analogy of the
@@ -153,13 +160,16 @@ GoogLeNet to generate the images (I like GoogLeNet's output better).
 It also requires the following software:
 
 * the ImageMagick image processing and generation package
+* Fred Weinhaus' Perlin noise ImageMagick script
 * Python (2.7) and the following Python packages
   - NLTK
   - pystache
 
 There are several more Python dependencies required to get Caffe
 running - these are described in detail on the Caffe website.
-  
+
+
+
 ## Credits
 
 * Princeton University (2010), [WordNet](http://wordnet.princeton.edu)
@@ -168,3 +178,4 @@ running - these are described in detail on the Caffe website.
 * Øygard, Audun (2015), ['Visualising GoogLeNet classes'](http://auduno.com/post/125362849838/visualizing-googlenet-classes)
 * Mordvintsev, Alexander, Tyka, Michael and Olah, Christopher (2015)
 ['deepdream GitHub repository'](https://github.com/google/deepdream)
+* Weinhaus, Fred (2015), [perlin.sh](http://www.fmwconcepts.com/imagemagick/perlin/index.php)
