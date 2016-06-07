@@ -132,6 +132,7 @@ def deepdraw(conffile, infile, outdir, outfile):
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=42, help="Number of frames to generate")
 parser.add_argument("-i", "--initial", type=str, default=None, help="Initial image - if not supplied, will start with a random image")
+parser.add_argument("-f", "--first", type=str, default=None, help="First set of classes")
 parser.add_argument("-c", "--config", type=str, default=None, help="Global config file")
 parser.add_argument("-r", "--remote", type=str, default=None, help="Remote classify parameters")
 parser.add_argument("-s", "--static", action='store_true', help="Same base image for all frames", default=False)
@@ -173,7 +174,14 @@ if args.initial:
     start_targets = neuralgae.read_config(initconf)
 else:
     model = mi.next()
-    start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
+    if args.first:
+        start_targets = [ int(t) for t in args.first.split(',') ]
+        out = [ t for t in start_targets if t >= NTARGETS[model] ]
+        if out:
+            print "Classes out of range"
+            sys.exit(-1)
+    else:
+        start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
     conffile = os.path.join(args.outdir, 'conf0.json')
     print "Config file: %s " % conffile
     cf['target'] = ','.join([ str(x) for x in start_targets ])

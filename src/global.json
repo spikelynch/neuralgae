@@ -4,15 +4,15 @@
     "weighted": 1, 
     "nsample": 6, 
     "iters": 300, 
-    "bg_script": "bg_gradient.sh", 
-    "model": "googlenet,googlenet,googlenet,googlenet,places", 
+    "bg_script": "Backgrounds/bg_gradient.sh", 
+    "model": "places,googlenet", 
     "bg_params": [
         "gray", 
         "25", 
-        "10", 
-        "10%,90%", 
-        "1x10"
+        "80", 
+        "5%,95%", 
+        "4x10"
     ], 
-    "sigma": 0.35, 
+    "sigma": 0.2, 
     "size": 224
 }
