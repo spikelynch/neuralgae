@@ -3,7 +3,7 @@
 # Creates a background image made from a radial gradient between two 
 # colours with Perlin noise over the top.
 #
-# The Perlin noise is generated with Fred Weinhaus' script perlin.sh
+# Requires the ImageMagick toolkit and Fred Weinhaus' script perlin.sh
 #
 # http://www.fmwconcepts.com/imagemagick/perlin/index.php
 #
@@ -20,6 +20,8 @@
 # LEVELS  - level balance like "5%,95%" - everything < 5% pushed to black,
 #           everything above 95% pushed to white
 # BLUR    - blur RxS (radius x sigma)
+
+PERLIN="./Backgrounds/perlin.sh"
 
 file=$1
 geom="$2x$2"
@@ -51,7 +53,7 @@ echo "gradient ${gradient}"
 echo "levels ${level}"
 echo "blur ${blur}"
 
-/Users/mike/Desktop/DeepDream/deepdream/scripts/perlin.sh ${geom} -m ${mode} -a ${att} ${working}/perlin.jpg
+$PERLIN ${geom} -m ${mode} -a ${att} ${working}/perlin.jpg
 
 convert -size ${geom} ${gradient} ${working}/fade.jpg 
 composite -blend ${blend} ${working}/perlin.jpg ${working}/fade.jpg ${working}/comp.jpg

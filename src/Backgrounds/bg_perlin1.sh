@@ -3,7 +3,7 @@
 # Creates a background image made from a sinusoid-noise pattern with
 # a Perlin noise in bw over the top.
 #
-# The Perlin noise is generated with Fred Weinhaus' script perlin.sh:
+# Requires the ImageMagick toolkit and Fred Weinhaus' script perlin.sh
 #
 # http://www.fmwconcepts.com/imagemagick/perlin/index.php
 #
@@ -15,6 +15,8 @@
 # SIZE    - image size (for eg 224x224)
 # SCALE   - scale of sinusoid noise
 # BLEND   - balance between sinusoid noise and perlin noise
+
+PERLIN="./Backgrounds/perlin.sh"
 
 working="./working"
 bgfile=$1
@@ -48,6 +50,6 @@ convert ${working}/red.jpg ${working}/green.jpg ${working}/blue.jpg -combine ${w
 
 
 #convert -size ${size}x${size} gradient:black-white ${working}/fade.jpg
-./perlin.sh ${size}x${size} ${working}/fade.jpg
+$PERLIN ${size}x${size} ${working}/fade.jpg
 composite -blend ${blend} ${working}/fade.jpg ${working}/base1.jpg $bgfile
 
