@@ -174,10 +174,11 @@ running - these are described in detail on the Caffe website.
 
 ## Credits
 
-* Princeton University (2010), [WordNet](http://wordnet.princeton.edu)
-  Princeton University
 * Bird, Steven, Edward Loper and Ewan Klein (2009), [Natural Language Processing with Python.](http://www.nltk.org/) O’Reilly Media Inc.
-* Øygard, Audun (2015), ['Visualising GoogLeNet classes'](http://auduno.com/post/125362849838/visualizing-googlenet-classes)
 * Mordvintsev, Alexander, Tyka, Michael and Olah, Christopher (2015)
 ['deepdream GitHub repository'](https://github.com/google/deepdream)
+* Øygard, Audun (2015), ['Visualising GoogLeNet classes'](http://auduno.com/post/125362849838/visualizing-googlenet-classes)
+* Princeton University (2010), [WordNet](http://wordnet.princeton.edu)
+  Princeton University
+* Thyssen, Anthony (2011), [ImageMagick Canvas Creation](http://www.imagemagick.org/Usage/canvas/#random)
 * Weinhaus, Fred (2015), [perlin.sh](http://www.fmwconcepts.com/imagemagick/perlin/index.php)
