@@ -12,7 +12,7 @@
 # bg_gradient $OUTFILE $SIZE $MODE $ATT $BLEND $LEVELS $BLUR
 #
 # OUTFILE - filename to write output to
-# SIZE    - image size (for eg 224x224)
+# SIZE    - image size (for eg 224 - all outputs are square)
 # MODE    - color|gray parameter for noise
 # ATT     - attenuation parameter for perlin.sh
 # BLEND   - balance of gradient/noise
@@ -33,10 +33,10 @@ if [ -e ./last_colour.txt ]
 then
     go="$(cat ./last_colour.txt)"
 else
-    go="$(rnd_gradient.py)"
+    go="$(./Backgrounds/rnd_gradient.py)"
 
 fi
-gn="$(./rnd_gradient.py)"
+gn="$(./Backgrounds/rnd_gradient.py)"
 gradient="radial-gradient:${go}-${gn}"
 echo $gn > ./last_colour.txt
 echo "gradient: $gradient"
