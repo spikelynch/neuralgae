@@ -108,7 +108,7 @@ def classify_remote(model, image, n, cf):
     shutil.copyfile(image, os.path.join(cf['localdir'], filename))
     imagecp = os.path.join(cf['remotedir'], filename)
     command = ' '.join([ "source /etc/profile;", script, model, imagecp, str(n)])
-    out = subprocess.check_output(["ssh", "-p", cf['port'], cf['host'], command])
+    out = subprocess.check_output(["ssh", "-i", cf['key'], "-p", cf['port'], cf['host'], command])
     #results = [int(s) for s in out.split(',')]
     results = json.loads(out)
     print results

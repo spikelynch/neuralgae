@@ -8,6 +8,7 @@ DEFINITIONS = './Definitions'
 LINELENGTH = 6
 TWEET_CHARS = 116
 OLD_LINE_RE = re.compile('^(.*): (.*)$')
+WORD_RE = re.compile('^[a-zA-Z]')
 
 def parse_line(l, model):
     """model = True - if this is true get model from the file"""
@@ -23,7 +24,9 @@ def parse_line(l, model):
     if model:
         m = bits[1]
         bits = bits[1:]
-    words = [ bits[n] for n in range(0, len(bits)) if n % 2 ]
+    #words = [ bits[n] for n in range(0, len(bits)) if n % 2 ]
+    words = [ b for b in bits if WORD_RE.match(b) ]
+    words = words[1:]
     return image, words, m
 
 

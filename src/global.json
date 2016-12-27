@@ -1,18 +1,29 @@
 {
-    "nstart": 6, 
-    "ntween": 8, 
+    "nstart": 4, 
+    "ntween": 10, 
     "weighted": 1, 
-    "nsample": 6, 
-    "iters": 300, 
-    "bg_script": "Backgrounds/bg_gradient.sh", 
-    "model": "places,googlenet", 
+    "nsample": 4,
+    "reset": 0.6,
+    "iters": 10, 
+    "model": "googlenet", 
+    "bg_script": "/Users/mike/Desktop/DeepDream/deepdream/Scripts/sparse2.py", 
     "bg_params": [
-        "gray", 
-        "25", 
-        "80", 
-        "5%,95%", 
-        "4x10"
-    ], 
-    "sigma": 0.2, 
-    "size": 224
+        "-x", "224",
+        "-y", "224",
+        "-c", "6",
+        "-n", "100",
+        "-b", "shepards",
+	"-v",
+        "-g", "radial-gradient:white-black"
+    ],
+    "sigma": 0.36, 
+    "size": 224,
+    "remote": {
+        "port": "2223",
+        "host": "osboxes@127.0.0.1",
+        "key": "/Users/mike/.ssh/dreamer",
+        "basedir": "/home/osboxes/Desktop/Dreams/neuralgae/src/",
+        "localdir": "/Users/mike/Desktop/DeepDream/Viriconium/Neuralgae/Classify",
+        "remotedir": "/media/sf_Viriconium/Neuralgae/Classify"
+    }
 }

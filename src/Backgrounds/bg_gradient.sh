@@ -37,9 +37,9 @@ else
 
 fi
 gn="$(./Backgrounds/rnd_gradient.py)"
-gradient="radial-gradient:${go}-${gn}"
+gradient="gradient:${go}-${gn}"
 echo $gn > ./last_colour.txt
-echo "gradient: $gradient"
+echo "radial-gradient: $gradient"
 echo "go = $go"
 
 level=$6

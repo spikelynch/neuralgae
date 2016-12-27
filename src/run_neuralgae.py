@@ -3,6 +3,7 @@
 
 import sys
 import subprocess
+import copy
 import os.path
 import shutil
 import json
@@ -79,14 +80,31 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
         t = classify.classify_remote(model, lastimage, 0, remote_cf)
     else:
         t = classify.classify(model, lastimage, 0)
-    targets = dict(sorted(t.items(), key=lambda x: -x[1])[:cf['ntween']])
-    if cf['nsample'] < cf['ntween']:
+    t0 = dict(sorted(t.items(), key=lambda x: -x[1])[:cf['ntween']])
+    targets = { c: t0[c] for c in t0.keys() if t0[c] > 0 }
+    if len(targets) < len(t0):
+        print "Discarded some zeroes"
+    if cf['nsample'] < len(targets):
         ts = random.sample(targets.keys(), cf['nsample'])
         ots = targets
         targets = { t:ots[t] for t in ts }
     print targets
     return targets
 
+
+def match_targets(d1, d2):
+    t = []
+    l = len(d2)
+    for k, v in d2.iteritems():
+        if k in d1:
+            t.append(1.0 / (1 + (d2[k] - d1[k]) ** 2))
+    if l:
+        print(t)
+        return sum(t) / l
+    else:
+        return 0
+
+    
 
 def class_names(model, t):
     imagen = ImageCategories(model)
@@ -117,24 +135,25 @@ def log_line(image, model, t):
 
 
 def make_background(cf, bgfile):
-    bg_script = './' + cf['bg_script']
-    bg_params = cf['bg_params']
-    args = [ bg_script, bgfile, str(cf['size']) ] + bg_params
+    bg_script = cf['bg_script']
+    args = [ bg_script ] + cf['bg_params'] + [ bgfile ]
+#    args = [ bg_script, bgfile, str(cf['size']) ] + bg_params
     print args
-    subprocess.call(args)
+    subprocess.check_output(args)
+    #sys.exit(0)
         
 def deepdraw(conffile, infile, outdir, outfile):
     dd = [ './dream.py', '--config', conffile, '--basefile', outfile, infile, outdir ]
     print "deepdraw %s" % dd
-    subprocess.call(dd)
+    subprocess.check_output(dd, stderr=subprocess.STDOUT)
     return os.path.join(outdir, outfile) + '.jpg'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=42, help="Number of frames to generate")
 parser.add_argument("-i", "--initial", type=str, default=None, help="Initial image - if not supplied, will start with a random image")
 parser.add_argument("-f", "--first", type=str, default=None, help="First set of classes")
+parser.add_argument("-e", "--ever", action='store_true', help="Ignore classification, do first classes forever")
 parser.add_argument("-c", "--config", type=str, default=None, help="Global config file")
-parser.add_argument("-r", "--remote", type=str, default=None, help="Remote classify parameters")
 parser.add_argument("-s", "--static", action='store_true', help="Same base image for all frames", default=False)
 parser.add_argument("outdir",       type=str, help="Output directory")
 parser.add_argument("outfile",      type=str, help="File to log image classes")
@@ -146,13 +165,12 @@ outfile = os.path.join(args.outdir, args.outfile)
 if args.config:
     with open(args.config, 'r') as f:
         cf = json.load(f)
+    if cf['remote']:
+        remote_cf = cf['remote']
+    else:
+        remote_cf = None
 else:
     cf = DEFAULTS
-
-if args.remote:
-    with open(args.remote, 'r') as f:
-        remote_cf = json.load(f)
-else:
     remote_cf = None
     
 imagen = ImageCategories(cf['model'])
@@ -199,17 +217,28 @@ print "lastimage = %s" % lastimage
 
 print "generating %d frames" % args.number
 
+ltargets = None
+
 for i in range(1, args.number):
     model = mi.next()
     jsonfile = os.path.join(args.outdir, "conf%d.json" % i)
-    cf['target'] = do_classify(cf, remote_cf, model, lastimage)
+    if not args.ever:
+        cf['target'] = do_classify(cf, remote_cf, model, lastimage)
+        if ltargets and 'reset' in cf:
+            d = match_targets(ltargets, cf['target'])
+            print("last targets = {}".format(ltargets))
+            print("targets = {}".format(cf['target']))
+            print("matchiness = {}".format(d))
+            if d >= cf['reset']:
+                print("Resetting targets after diff = %d" % d)
+                random.sample(range(0, NTARGETS[model]), cf['nstart'])
+        ltargets = copy.deepcopy(cf['target'])
     frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
     frame_cf['model'] = model
     neuralgae.write_config(frame_cf, jsonfile)
     if not args.static:
         make_background(frame_cf, 'bg.jpg')
-    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, 'image%d' % i)
-    
+    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, 'image%d' % i)    
     targets = neuralgae.read_config(jsonfile)
     with open(outfile, 'a') as f:
         f.write(log_line(lastimage, model, targets))
