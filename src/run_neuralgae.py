@@ -31,8 +31,18 @@ DEFAULTS = {
     'model': 'googlenet',
     'size': 224,
     'iters': 300,
-    'sigma': 0.33
+    'sigma': 0.33,
+    'cutoff': 0.001
 }
+
+CONF_TEMP = 'conf%03d'
+IMG_TEMP = 'img%03d'
+
+def conffilename(i):
+    return ( CONF_TEMP % i ) + '.json'
+
+def imgfilename(i):
+    return IMG_TEMP % i
 
 
 def interpolate(v, k):
@@ -81,7 +91,8 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
     else:
         t = classify.classify(model, lastimage, 0)
     t0 = dict(sorted(t.items(), key=lambda x: -x[1])[:cf['ntween']])
-    targets = { c: t0[c] for c in t0.keys() if t0[c] > 0 }
+    cutoff = 0
+    targets = { c: t0[c] for c in t0.keys() if t0[c] > cutoff }
     if len(targets) < len(t0):
         print "Discarded some zeroes"
     if cf['nsample'] < len(targets):
@@ -92,17 +103,43 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
     return targets
 
 
-def match_targets(d1, d2):
+def match_targets(a1, a2):
+    d1 = rescale_targets(a1)
+    d2 = rescale_targets(a2)
     t = []
     l = len(d2)
     for k, v in d2.iteritems():
         if k in d1:
-            t.append(1.0 / (1 + (d2[k] - d1[k]) ** 2))
+            t.append(d2[k] / (1 + (d2[k] - d1[k]) ** 2))
     if l:
-        print(t)
-        return sum(t) / l
+        w = sum([ d2[k] for k in d2.keys() ])
+        if w > 0:
+            return sum(t) / w
+        else:
+            return 0
     else:
         return 0
+
+
+def remove_max_targets(t):
+    """Remove the greatest target"""
+    g0 = max(t, key=lambda k: t[k])
+    print "removing = {}".format(g0)
+    return { k:t[k] for k in t.keys() if k != g0 }
+
+
+
+def rescale_targets(t):
+    g1 = max(t, key=lambda k: t[k])
+    print "max = {}".format(g1)
+    t1 = { k: t[k] / t[g1] for k in t.keys() }
+    print "rescaled targets = {}".format(show_targets(t1))
+    return t1
+
+
+                #     cf['target'] = random.sample(range(0, NTARGETS[model]), cf['nstart'])
+                # if cf['weighted']:
+                #     cf['target'] = { u'{}'.format(k): 1 for k in cf['target'] }
 
     
 
@@ -119,15 +156,25 @@ def format_target(v):
     return v
 
 
-def log_line(image, model, t):
+def target_names(t):
     imagen = ImageCategories(model)
-    td = t
     if not type(t) == dict:
         td = { int(i): 1 for i in t }
     else:
         td = { int(i): v for (i, v) in t.iteritems() }
     nd = { imagen.name(i): v for (i, v) in td.iteritems() }
     nld = sorted(nd.items(), key=lambda x: -x[1])
+    return nld
+
+def show_targets(t):
+    st = target_names(t)
+    return ' '.join([ '{0}: {1:.3f}'.format(i[0], i[1]) for i in st])
+    
+
+
+def log_line(image, model, t):
+    imagen = ImageCategories(model)
+    nld = target_names(t)
     row = [ str(e) for l in nld for e in l ]
     row = [ image, model ] + row
     return ','.join(row) + "\n"
@@ -165,7 +212,7 @@ outfile = os.path.join(args.outdir, args.outfile)
 if args.config:
     with open(args.config, 'r') as f:
         cf = json.load(f)
-    if cf['remote']:
+    if 'remote' in cf and cf['remote']:
         remote_cf = cf['remote']
     else:
         remote_cf = None
@@ -187,8 +234,8 @@ start_targets = None
 if args.initial:
     model = mi.next()
     base = args.initial
-    lastimage = "%s.jpg" % base
-    initconf = "%s.json" % base
+    lastimage = ( IMG_TEMP + ".jpg" ) % base
+    initconf = ( CONF_TEMP + ".json" ) % base
     start_targets = neuralgae.read_config(initconf)
 else:
     model = mi.next()
@@ -200,14 +247,14 @@ else:
             sys.exit(-1)
     else:
         start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
-    conffile = os.path.join(args.outdir, 'conf0.json')
+    conffile = os.path.join(args.outdir, conffilename(0))
     print "Config file: %s " % conffile
     cf['target'] = ','.join([ str(x) for x in start_targets ])
     frame_cf = cf # interpolate_cf(cf, 0)
     frame_cf['model'] = model
     neuralgae.write_config(cf, conffile)
     make_background(cf, 'bg.jpg')
-    lastimage = deepdraw(conffile, 'bg.jpg', args.outdir, 'image0')
+    lastimage = deepdraw(conffile, 'bg.jpg', args.outdir, imgfilename(0))
     #sys.exit(-1)
     
 with open(outfile, 'w') as f:
@@ -219,26 +266,34 @@ print "generating %d frames" % args.number
 
 ltargets = None
 
+# Note: instead of resetting the targets, try removing the
+# largest one and renormalising the remainder
+
 for i in range(1, args.number):
     model = mi.next()
-    jsonfile = os.path.join(args.outdir, "conf%d.json" % i)
+    jsonfile = os.path.join(args.outdir, conffilename(i))
     if not args.ever:
         cf['target'] = do_classify(cf, remote_cf, model, lastimage)
         if ltargets and 'reset' in cf:
             d = match_targets(ltargets, cf['target'])
-            print("last targets = {}".format(ltargets))
-            print("targets = {}".format(cf['target']))
+            print("last targets = {}".format(show_targets(ltargets)))
+            print("targets = {}".format(show_targets(cf['target'])))
             print("matchiness = {}".format(d))
             if d >= cf['reset']:
-                print("Resetting targets after diff = %d" % d)
-                random.sample(range(0, NTARGETS[model]), cf['nstart'])
+                print("Removing max target after diff = {}".format(d))
+                cf['target'] = remove_max_targets(cf['target'])
+        if len(cf['target']):
+            cf['target'] = rescale_targets(cf['target'])
+        else:
+            cf['target'] = ','.join(random.sample(range(0, NTARGETS[model]), cf['ntween'])) 
+        print("final = {}".format(show_targets(cf['target'])))
         ltargets = copy.deepcopy(cf['target'])
     frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
     frame_cf['model'] = model
     neuralgae.write_config(frame_cf, jsonfile)
     if not args.static:
         make_background(frame_cf, 'bg.jpg')
-    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, 'image%d' % i)    
+    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, imgfilename(i))    
     targets = neuralgae.read_config(jsonfile)
     with open(outfile, 'a') as f:
         f.write(log_line(lastimage, model, targets))

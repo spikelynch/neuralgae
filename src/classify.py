@@ -52,12 +52,17 @@ MODELS = {
     'cnn_gender': 'cnn_gender',
     'caffenet': 'bvlc_reference_caffenet',
     'ilsvrc13': 'bvlc_reference_rcnn_ilsvrc13',
-    'flickr_style': 'finetune_flickr_style'
+    'flickr_style': 'finetune_flickr_style',
+    'manga' : 'illustration2vec',
+    'manga_tag' : 'illustration2vec_tag'
+
 #    'cars' : 'cars'
 }
 
 LAYERS = {
-    'oxford': 'fc8_oxford_102'
+    'oxford': 'fc8_oxford_102',
+    'manga': 'encode1neuron',
+    'manga_tag': 'prob'
 }
 
 MODEL = DEFAULT_MODEL
@@ -114,27 +119,48 @@ def classify_remote(model, image, n, cf):
     print results
     return results
 
-        
+
+
+def do_classify_weighted(remote_cf, model, lastimage):
+    if remote_cf:
+        t = classify_remote(model, lastimage, 0, remote_cf)
+    else:
+        t = classify(model, lastimage, 0)
+    targets = dict(sorted(t.items(), key=lambda x: -x[1]))
+    cutoff = 0.001
+    targets = { c: targets[c] for c in targets.keys() if targets[c] > cutoff }
+    return targets
+
+
+def parse_remote(remotef):
+    js = None
+    with open(remotef) as f:
+        js = json.load(f)
+    if not js:
+        print("Couldn't parse {}".format(remotef));
+        sys.exit(-1)
+    if 'remote' in js:
+        return js['remote']
+    else:
+        return js
+
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('model', type=str, help="Model name")
+    ap.add_argument('-m', '--model', type=str, help="Model name")
+    ap.add_argument('-r', '--remote', type=str, default=None, help="Remote config")
     ap.add_argument('image', type=str, help="Image to classify")
-    ap.add_argument('classes', type=int, help="Number of classes to return")
     args = ap.parse_args()
-    model = args.model
-    if model not in MODELS:
-        print "Unknown moded %s" % model
+    if args.model not in MODELS:
+        print "Unknown moded %s" % args.model
         sys.exit(-1)
-    image = args.image
-    classes = args.classes
-    if int(classes) > 0:
-        targets = classify(model, image, classes)
-        #print ','.join([ str(c) for c in targets])
-        print json.dumps(targets)
+    if args.remote:
+        remote_cf = parse_remote(args.remote)
+        print remote_cf
     else:
-        targets = classify(model, image, None)
-        print json.dumps(targets)
+        remote_cf = None
+    targets = do_classify_weighted(remote_cf, args.model, args.image)
+    print json.dumps(targets)
 
             
 
