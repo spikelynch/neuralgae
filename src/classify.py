@@ -112,11 +112,11 @@ def classify_remote(model, image, n, cf):
     filename = os.path.basename(image)
     shutil.copyfile(image, os.path.join(cf['localdir'], filename))
     imagecp = os.path.join(cf['remotedir'], filename)
-    command = ' '.join([ "source /etc/profile;", script, model, imagecp, str(n)])
+    command = ' '.join([ "source /etc/profile;", script, "-m", model, imagecp ])
     out = subprocess.check_output(["ssh", "-i", cf['key'], "-p", cf['port'], cf['host'], command])
     #results = [int(s) for s in out.split(',')]
     results = json.loads(out)
-    print results
+#    print results
     return results
 
 
@@ -156,7 +156,6 @@ if __name__ == '__main__':
         sys.exit(-1)
     if args.remote:
         remote_cf = parse_remote(args.remote)
-        print remote_cf
     else:
         remote_cf = None
     targets = do_classify_weighted(remote_cf, args.model, args.image)
