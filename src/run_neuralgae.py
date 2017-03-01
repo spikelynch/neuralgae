@@ -19,7 +19,8 @@ NTARGETS = {
     'caffenet': 1000,
     'places': 204,
     'flickr_style': 10,
-    'oxford': 102
+    'oxford': 102,
+    'manga_tag': 1538
 }
 
 DEFAULTS = {
@@ -32,7 +33,8 @@ DEFAULTS = {
     'size': 224,
     'iters': 300,
     'sigma': 0.33,
-    'cutoff': 0.001
+    'cutoff': 0.001,
+    'octaves': None
 }
 
 CONF_TEMP = 'conf%03d'
@@ -190,7 +192,7 @@ def make_background(cf, bgfile):
     #sys.exit(0)
         
 def deepdraw(conffile, infile, outdir, outfile):
-    dd = [ './dream.py', '--config', conffile, '--basefile', outfile, infile, outdir ]
+    dd = [ '../../deepdream/dream.py', '--config', conffile, '--basefile', outfile, infile, outdir ]
     print "deepdraw %s" % dd
     subprocess.check_output(dd, stderr=subprocess.STDOUT)
     return os.path.join(outdir, outfile) + '.jpg'

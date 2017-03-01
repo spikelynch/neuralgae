@@ -33,7 +33,9 @@ MODELS = {
     'cnn_gender': 'cnn_gender',
     'caffenet': 'bvlc_reference_caffenet',
     'ilsvrc13': 'bvlc_reference_rcnn_ilsvrc13',
-    'flickr_style': 'finetune_flickr_style'
+    'flickr_style': 'finetune_flickr_style',
+    'manga' : 'illustration2vec',
+    'manga_tag' : 'illustration2vec_tag'
 #    'cars' : 'cars'
 }
 
@@ -46,7 +48,9 @@ DEFAULT_LAYERS = {
     'cars': 'pool5',
     'caffenet': 'pool5',
     'ilsvrc13': 'pool5',
-    'flickr_style': 'pool5'
+    'flickr_style': 'pool5',
+    'manga': 'pool5',
+    'manga_tag': 'pool6'
 }
 
 CLASS_TARGET_LAYER = {
@@ -58,12 +62,15 @@ CLASS_TARGET_LAYER = {
     'cnn_age': 'fc8',
     'cnn_gender': 'fc8',
     'ilsvrc13': 'fc-rcnn',
-    'caffenet': 'fc8'
+    'caffenet': 'fc8',
+    'manga': 'encode1neuron',
+    'manga_tag': 'conv6_4'
 }
 
 N_CLASSES = {
     'googlenet': 1000,
     'caffenet': 1000,
+    'manga_tag': 1539,
     'places': 205
 }
 
@@ -73,8 +80,11 @@ CLASS_BACKGROUND = 128.0
 
 MD_FILE = 'dream.json'
 
+
 MEAN_BINARIES = {
-    'cnn_age': 'cnn_age_gender/mean.binaryproto',
+    #    'cnn_age': 'cnn_age_gender/mean.binaryproto',
+    'manga_tag': 'illustration2vec_tag/image_mean.npy',
+    'manga': 'illustration2vec_tag/image_mean.npy'
 }
 
 

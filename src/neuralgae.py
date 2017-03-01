@@ -5,7 +5,8 @@ TEMPLATE = './Templates/json.mustache'
 CLASS_RE = {
     'googlenet': '^(\d+) n\d+ (.*)$',
     'caffenet': '^(\d+) n\d+ (.*)$',
-    'places': '^(\d+) (\S*)$'
+    'places': '^(\d+) (\S*)$',
+    'manga_tag': '^(\d+) (\S*)$'
     }
 
 def write_config(details, outf):
