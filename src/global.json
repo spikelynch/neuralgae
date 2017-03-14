@@ -1,20 +1,24 @@
 {
-    "nstart": 4, 
-    "ntween": 10, 
-    "weighted": 1, 
+    "nstart": 4,
+    "ntween": 10,
+    "weighted": 1,
     "nsample": 4,
     "reset": 0.5,
     "cutoff": 0.01,
-    "iters": 300, 
-    "model": "manga_tag",
-    "deepdraw": "/Users/mike/Desktop/DeepDream/deepdream/Manga/conv6_4.json",
-    "bg_script": "/Users/mike/Desktop/DeepDream/deepdream/Scripts/grad_perlin_bw.sh", 
+    "iters": 300,
+    "model": "googlenet",
+    "deepdraw": "/Users/mike/Desktop/DeepDream/deepdream/Manga/googlenet_g3m_s4a.json",
+    "bg_script": "/Users/mike/Desktop/DeepDream/deepdream/Scripts/background.sh",
     "bg_params": [
         "224x224",
+        "gray",
         "10",
-        "50"
+        "50",
+        "gradient:white-gray90",
+        "10%,90%",
+        "0x4"
     ],
-    "sigma": 0.3, 
+    "sigma": 0.3,
     "size": 224,
     "remote": {
         "port": "2223",

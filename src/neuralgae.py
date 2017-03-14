@@ -6,7 +6,7 @@ CLASS_RE = {
     'googlenet': '^(\d+) n\d+ (.*)$',
     'caffenet': '^(\d+) n\d+ (.*)$',
     'places': '^(\d+) (\S*)$',
-    'manga_tag': '^(\d+) (\S*)$'
+    'manga_tag': '^(\d+) (.*)$'
     }
 
 def write_config(details, outf):
@@ -36,6 +36,8 @@ class ImageCategories(object):
                         i = int(m.group(1))
                         names = m.group(2)
                         self.names[i] = names.split(', ')
+                    else:
+                        print("Mismatched line {}".format(l))
         else:
             self.names = None
 

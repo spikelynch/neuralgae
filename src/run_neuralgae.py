@@ -20,7 +20,8 @@ NTARGETS = {
     'places': 204,
     'flickr_style': 10,
     'oxford': 102,
-    'manga_tag': 1538
+    'manga_tag': 1538,
+    'manga': 4096
 }
 
 DEFAULTS = {
@@ -68,7 +69,7 @@ def interpolate_cf(cf, k):
             frame_cf[key] = value
     print frame_cf
     return frame_cf
-    
+
 
 def model_iter(cfm):
     l = cfm.split(',')
@@ -84,7 +85,6 @@ def do_classify(cf, remote_cf, model, lastimage):
         targets = classify.classify(model, lastimage, cf['ntween'])
     if cf['nsample'] < cf['ntween']:
         targets = random.sample(targets, cf['nsample'])
-    print targets
     return ','.join([ str(x) for x in targets ])
 
 def do_classify_weighted(cf, remote_cf, model, lastimage):
@@ -94,6 +94,7 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
         t = classify.classify(model, lastimage, 0)
     t0 = dict(sorted(t.items(), key=lambda x: -x[1])[:cf['ntween']])
     cutoff = 0
+    print("classified: {}".format(t0))
     targets = { c: t0[c] for c in t0.keys() if t0[c] > cutoff }
     if len(targets) < len(t0):
         print "Discarded some zeroes"
@@ -101,8 +102,31 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
         ts = random.sample(targets.keys(), cf['nsample'])
         ots = targets
         targets = { t:ots[t] for t in ts }
-    print targets
+    print("using: {}".format(targets))
     return targets
+
+
+def flatten_targets(cf, ltargets):
+    """Raise all to 1.0"""
+    for t in cf['target'].keys():
+        cf['target'][t] = 1.0
+    return cf['target']
+
+
+def perturb_targets(cf, ltargets):
+    d = match_targets(ltargets, cf['target'])
+    print("matchiness = {}".format(d))
+    if d >= cf['reset']:
+        print("Match between targets {} > {}".format(d, cf['reset']))
+        cf['target'] = remove_max_targets(cf['target'])
+        print("Remaining targets {}".format(cf['target']))
+    if len(cf['target']):
+      print("Rescaling remaining targets")
+      cf['target'] = rescale_targets(cf['target'])
+    else:
+      print("Resetting all targets")
+      cf['target'] = { t: 1 for t in random.sample(range(0, NTARGETS[model]), cf['ntween']) }
+    return cf['target']
 
 
 def match_targets(a1, a2):
@@ -133,17 +157,10 @@ def remove_max_targets(t):
 
 def rescale_targets(t):
     g1 = max(t, key=lambda k: t[k])
-    print "max = {}".format(g1)
     t1 = { k: t[k] / t[g1] for k in t.keys() }
-    print "rescaled targets = {}".format(show_targets(t1))
     return t1
 
 
-                #     cf['target'] = random.sample(range(0, NTARGETS[model]), cf['nstart'])
-                # if cf['weighted']:
-                #     cf['target'] = { u'{}'.format(k): 1 for k in cf['target'] }
-
-    
 
 def class_names(model, t):
     imagen = ImageCategories(model)
@@ -171,7 +188,7 @@ def target_names(t):
 def show_targets(t):
     st = target_names(t)
     return ' '.join([ '{0}: {1:.3f}'.format(i[0], i[1]) for i in st])
-    
+
 
 
 def log_line(image, model, t):
@@ -190,7 +207,7 @@ def make_background(cf, bgfile):
     print args
     subprocess.check_output(args)
     #sys.exit(0)
-        
+
 def deepdraw(conffile, infile, outdir, outfile):
     dd = [ '../../deepdream/dream.py', '--config', conffile, '--basefile', outfile, infile, outdir ]
     print "deepdraw %s" % dd
@@ -221,13 +238,17 @@ if args.config:
 else:
     cf = DEFAULTS
     remote_cf = None
-    
-imagen = ImageCategories(cf['model'])
+
+# imagen = ImageCategories(cf['model'])
 
 cfdump = os.path.join(args.outdir, 'global.conf')
 with open(cfdump, 'w') as cfd:
     json.dump(cf, cfd, indent=4)
-    
+
+
+multi = False
+if ',' in cf['model']:
+    multi = True
 
 mi = model_iter(cf['model'])
 
@@ -258,7 +279,7 @@ else:
     make_background(cf, 'bg.jpg')
     lastimage = deepdraw(conffile, 'bg.jpg', args.outdir, imgfilename(0))
     #sys.exit(-1)
-    
+
 with open(outfile, 'w') as f:
     f.write(log_line(lastimage, model, start_targets))
 
@@ -276,18 +297,10 @@ for i in range(1, args.number):
     jsonfile = os.path.join(args.outdir, conffilename(i))
     if not args.ever:
         cf['target'] = do_classify(cf, remote_cf, model, lastimage)
-        if ltargets and 'reset' in cf:
-            d = match_targets(ltargets, cf['target'])
-            print("last targets = {}".format(show_targets(ltargets)))
-            print("targets = {}".format(show_targets(cf['target'])))
-            print("matchiness = {}".format(d))
-            if d >= cf['reset']:
-                print("Removing max target after diff = {}".format(d))
-                cf['target'] = remove_max_targets(cf['target'])
-        if len(cf['target']):
-            cf['target'] = rescale_targets(cf['target'])
-        else:
-            cf['target'] = ','.join(random.sample(range(0, NTARGETS[model]), cf['ntween'])) 
+        if 'flatten' in cf:
+            cf['target'] = flatten_targets(cf, ltargets)
+        elif not multi and (ltargets and 'reset' in cf):
+            cf['target'] = perturb_targets(cf, ltargets)
         print("final = {}".format(show_targets(cf['target'])))
         ltargets = copy.deepcopy(cf['target'])
     frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
@@ -295,7 +308,7 @@ for i in range(1, args.number):
     neuralgae.write_config(frame_cf, jsonfile)
     if not args.static:
         make_background(frame_cf, 'bg.jpg')
-    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, imgfilename(i))    
+    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, imgfilename(i))
     targets = neuralgae.read_config(jsonfile)
     with open(outfile, 'a') as f:
         f.write(log_line(lastimage, model, targets))
