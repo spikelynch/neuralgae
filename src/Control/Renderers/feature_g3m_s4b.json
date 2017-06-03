@@ -1,0 +1,19 @@
+[
+    {
+        "layer":"encode1neuron",
+        "iter_n":160,
+        "start_sigma":0.5,
+        "end_sigma": 0.4,
+        "start_step_size":5,
+        "end_step_size":2.3
+    },
+    {
+        "layer":"encode1neuron",
+        "iter_n":40,
+        "start_sigma":0.3,
+        "end_sigma":0.2,
+        "start_step_size":2,
+        "end_step_size":2,
+        "scale": 1.414
+    }
+]

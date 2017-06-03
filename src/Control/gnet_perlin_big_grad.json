@@ -1,0 +1,34 @@
+{
+    "nstart": 4,
+    "ntween": 8,
+    "weighted": 1,
+    "cutoff": 0.00,
+    "reset": 0.9,
+    "add_randoms": 1,
+    "downscale": 0.8,
+    "remove_seen": 1,
+    "iters": 400,
+    "nsample": 10,
+    "deepdraw": "./Control/Renderers/gg_big_detailed.json",
+    "bg_script": "/Users/mike/Desktop/DeepDream/deepdream/Scripts/background.sh",
+    "model": "googlenet",
+    "size": 224,
+    "sigma": 0.36,
+    "bg_params": [
+        "224x224",
+        "gray",
+        "3",
+        "30",
+        "gradient:white-gray35",
+        "10%,90%",
+        "0x6"
+    ],
+    "remote": {
+        "key": "/Users/mike/.ssh/dreamer",
+        "basedir": "/home/osboxes/Desktop/Dreams/neuralgae/src/",
+        "localdir": "/Users/mike/Desktop/DeepDream/Viriconium/Neuralgae/Classify",
+        "host": "osboxes@127.0.0.1",
+        "remotedir": "/media/sf_Viriconium/Neuralgae/Classify",
+        "port": "2223"
+    }
+}

@@ -6,7 +6,7 @@
     "reset": 0.99,
     "iters": 400, 
     "nsample": 10,
-    "deepdraw": "./Control/Renderers/googlenet_expand.json",
+    "deepdraw": "./Control/Renderers/googlenet_detailed.json",
     "bg_script": "/Users/mike/Desktop/DeepDream/deepdream/Scripts/sparse2.py", 
     "model": "googlenet", 
     "size": 224, 
@@ -22,9 +22,9 @@
         "200", 
         "-b", 
         "shepards", 
-        "-v", 
-        "-g", 
-        "radial-gradient:white-black"
+        "-e",
+        "-g",
+        "radial-gradient:white-grey50"
     ],
     "remote": {
         "key": "/Users/mike/.ssh/dreamer", 
