@@ -64,7 +64,7 @@ def conffilename(i):
     return ( CONF_TEMP % i ) + '.json'
 
 def imgfilename(i):
-    return IMG_TEMP % i
+    return ( IMG_TEMP % i )
 
 
 def interpolate(v, k):
