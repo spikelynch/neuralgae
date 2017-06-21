@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 # code to classify an input image and return the top n matching targets
 
@@ -29,18 +29,11 @@ DEFAULT_MODEL = 'caffenet'
 
 CLASSES = './classes.txt'
 
-if 'CAFFE_PATH' in os.environ:
-    CAFFE_ROOT = os.path.join(os.environ['CAFFE_PATH'])
-else:
-    print """
-You need to set the environment variable CAFFE_PATH to the location of your
-Caffe installation
-"""
-    sys.exit(-1)
+CAFFE_ROOT =  "/shared/homes/960700/caffe"
 
 MEAN = os.path.join(CAFFE_ROOT, 'python/caffe/imagenet/ilsvrc_2012_mean.npy')
 
-CAFFE_MODELS = os.path.join(CAFFE_ROOT, 'models')
+CAFFE_MODELS = "/shared/homes/960700/caffemodels/models"
 
 IMAGE = os.path.join(CAFFE_ROOT, 'examples/images/fish-bike.jpg')
 
@@ -158,6 +151,7 @@ if __name__ == '__main__':
         remote_cf = parse_remote(args.remote)
     else:
         remote_cf = None
+    caffe.set_mode_gpu()
     targets = do_classify_weighted(remote_cf, args.model, args.image)
     print json.dumps(targets)
 

@@ -10,10 +10,12 @@
     "iters": 400,
     "nsample": 10,
     "deepdraw": "./Control/Renderers/gg_big_detailed.json",
-    "bg_script": "/shared/homes/960700/deepdream/Scripts/smoothnoise.sh",
+    "bg_script": "/shared/homes/960700/deepdream/Scripts/background.sh",
     "model": "googlenet",
     "size": 224,
     "sigma": 0.36,
     "bg_params": [
+        "224x224", "color", "3", "50", "gradient:white-black", "1%,99%",
+        "0x8"
     ]
 }

@@ -46,7 +46,7 @@ DEFAULT_LOGFORM = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 CONF_TEMP = 'conf%03d'
 IMG_TEMP = 'img%03d'
 
-COLORFILE = '/opt/X11/share/X11/rgb.txt'
+COLORFILE = './rgb.txt' #'/opt/X11/share/X11/rgb.txt'
 
 colornames = []
 with open(COLORFILE) as cf:
@@ -191,8 +191,10 @@ def match_targets(a1, a2):
 
 def add_randoms(targets, nrandoms):
     tn = { str(t).encode('utf-8'):1 for t in range(0, NTARGETS[model]) }
-    for t in targets:
-        del(tn[t])
+    #print tn
+    #print targets
+    #for t in targets:
+    #    del(tn[t])
     for n in random.sample(tn.keys(), nrandoms):
         targets[n] = 1
     return targets
@@ -276,7 +278,8 @@ def make_background(cf, bgfile):
 
 def deepdraw(conffile, infile, outdir, outfile):
     logger.info("Drawing image {} -> {}".format(infile, outfile))
-    dd = [ '../../deepdream/dream.py', '--config', conffile, '--basefile', outfile, infile, outdir ]
+    dd = [ '../../deepdream/dream.py', '--gpu', '--config', conffile, '--basefile', outfile, infile, outdir ]
+    logger.debug("Command: {}".format(dd))
     subprocess.check_output(dd, stderr=subprocess.STDOUT)
     return os.path.join(outdir, outfile) + '.jpg'
 

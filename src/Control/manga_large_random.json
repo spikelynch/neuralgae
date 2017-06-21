@@ -10,31 +10,11 @@
     "iters": 400, 
     "nsample": 10,
     "deepdraw": "./Control/Renderers/manga_big_detailed.json",
-    "bg_script": "/Users/mike/Desktop/DeepDream/deepdream/Scripts/sparse2.py", 
-    "model": "manga", 
+    "bg_script": "/shared/homes/960700/deepdream/Scripts/smoothnoise.sh", 
+    "model": "manga_tag", 
     "size": 224, 
     "sigma": 0.36, 
     "bg_params": [
-        "-x", 
-        "224", 
-        "-y", 
-        "224", 
-        "-c", 
-        "6", 
-        "-n", 
-        "200", 
-        "-b",
-        "shepards",
-        "-e",
-        "-g", 
-        "gradient:white-gray75"
-    ],
-    "remote": {
-        "key": "/Users/mike/.ssh/dreamer", 
-        "basedir": "/home/osboxes/Desktop/Dreams/neuralgae/src/", 
-        "localdir": "/Users/mike/Desktop/DeepDream/Viriconium/Neuralgae/Classify", 
-        "host": "osboxes@127.0.0.1", 
-        "remotedir": "/media/sf_Viriconium/Neuralgae/Classify", 
-        "port": "2223"
-    } 
+    ]
+   
 }

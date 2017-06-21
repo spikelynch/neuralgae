@@ -9,7 +9,7 @@
     "remove_seen": 1,
     "iters": 400,
     "nsample": 10,
-    "deepdraw": "./Control/Renderers/gg_big_detailed.json",
+    "deepdraw": "./Control/Renderers/google_huge.json",
     "bg_script": "/shared/homes/960700/deepdream/Scripts/smoothnoise.sh",
     "model": "googlenet",
     "size": 224,
