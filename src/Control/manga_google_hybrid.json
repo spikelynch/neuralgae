@@ -9,9 +9,12 @@
     "remove_seen": 1,
     "iters": 400, 
     "nsample": 10,
-    "deepdraw": "./Control/Renderers/manga_big_detailed.json",
+    "deepdraw": {
+        "googlenet": "./Control/Renderers/gg_big_detailed.json",
+        "manga_tag": "./Control/Renderers/manga_big_grad.json"
+    },
     "bg_script": "/Users/mike/Desktop/DeepDream/deepdream/Scripts/sparse2.py", 
-    "model": "manga", 
+    "model": "googlenet,manga_tag", 
     "size": 224, 
     "sigma": 0.36, 
     "bg_params": [

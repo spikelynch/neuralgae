@@ -22,7 +22,7 @@ NTARGETS = {
     'places': 205,
     'flickr_style': 10,
     'oxford': 102,
-    'manga_tag': 1538,
+    'manga_tag': 1536,  #excludes the three safe/questionable/explicit tags
     'manga': 4096
 }
 
@@ -114,7 +114,11 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
     t0 = dict(sorted(t.items(), key=lambda x: -x[1])[:cf['ntween']])
     cutoff = 0
     logger.info("Classify results: {}".format(show_targets(t0)))
-    targets = { c: t0[c] for c in t0.keys() if t0[c] > cutoff }
+    logger.info("Classify results: {}".format(t0))
+    # hack to filter targets down to just the first 512 for manga_tag
+    targets = { c: t0[c] for c in t0.keys() if ( t0[c] > cutoff and int(c) < NTARGETS[model]) }
+    logger.info("Filtered results: {}".format(show_targets(targets)))
+    logger.info("Classify results: {}".format(targets))
     if cf['nsample'] < len(targets):
         logger.debug("Sampling {} of {} targets".format(cf['nsample'], len(targets)))
         ts = random.sample(targets.keys(), cf['nsample'])
@@ -165,7 +169,7 @@ def perturb_targets(cf, ltargets, downscale, seen):
             logger.debug("Rescaling remaining targets")
             cf['target'] = rescale_targets(cf['target'])
     else:
-      logger.debug("Resetting all targets")
+      logger.debug("No targets left: resetting all targets")
       cf['target'] = { t: 1 for t in random.sample(range(0, NTARGETS[model]), cf['ntween']) }
       #seen = {}
     logger.info("Final targets {}".format(show_targets(cf['target'])))
@@ -354,6 +358,7 @@ logger.info("Generating %d frames" % args.number)
 multi = False
 if ',' in cf['model']:
     multi = True
+    multi_renderers = cf['deepdraw']
 
 mi = model_iter(cf['model'])
 
@@ -376,9 +381,12 @@ else:
             sys.exit(-1)
     else:
         start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
+    logger.info("NTARGETS[{}]: {}".format(model, NTARGETS[model]))
     logger.info("Start targets: " + show_targets(start_targets))
     conffile = os.path.join(args.outdir, conffilename(0))
     cf['target'] = ','.join([ str(x) for x in start_targets ])
+    if multi:
+        cf['deepdraw'] = multi_renderers[model]
     frame_cf = cf # interpolate_cf(cf, 0)
     frame_cf['model'] = model
     neuralgae.write_config(cf, conffile)
@@ -415,6 +423,8 @@ for i in range(start, start + args.number):
         ltargets = copy.deepcopy(cf['target'])
     frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
     frame_cf['model'] = model
+    if multi:
+        frame_cf['deepdraw'] = multi_renderers[model]
     neuralgae.write_config(frame_cf, jsonfile)
     if not args.static:
         make_background(frame_cf, 'bg.jpg')
