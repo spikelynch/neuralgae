@@ -22,7 +22,7 @@ NTARGETS = {
     'places': 205,
     'flickr_style': 10,
     'oxford': 102,
-    'manga_tag': 1538,
+    'manga_tag': 512,
     'manga': 4096
 }
 

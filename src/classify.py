@@ -33,7 +33,7 @@ CAFFE_ROOT =  "/shared/homes/960700/caffe"
 
 MEAN = os.path.join(CAFFE_ROOT, 'python/caffe/imagenet/ilsvrc_2012_mean.npy')
 
-CAFFE_MODELS = "/shared/homes/960700/caffemodels/models"
+CAFFE_MODELS = os.path.join(CAFFE_ROOT, "models")
 
 IMAGE = os.path.join(CAFFE_ROOT, 'examples/images/fish-bike.jpg')
 
@@ -142,6 +142,7 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('-m', '--model', type=str, help="Model name")
     ap.add_argument('-r', '--remote', type=str, default=None, help="Remote config")
+    ap.add_argument('-g', '--gpu', action="store_true", help="Run in GPU mode")
     ap.add_argument('image', type=str, help="Image to classify")
     args = ap.parse_args()
     if args.model not in MODELS:
@@ -151,7 +152,9 @@ if __name__ == '__main__':
         remote_cf = parse_remote(args.remote)
     else:
         remote_cf = None
-    caffe.set_mode_gpu()
+    if args.gpu:
+        print "Running on GPU"
+        caffe.set_mode_gpu()
     targets = do_classify_weighted(remote_cf, args.model, args.image)
     print json.dumps(targets)
 
