@@ -15,7 +15,7 @@
     "size": 224,
     "sigma": 0.36,
     "bg_params": [
-        "224x224", "color", "3", "50", "gradient:white-black", "1%,99%",
+        "256x256", "gray", "8", "70", "gradient:gray90-gray10", "10%,90%",
         "0x8"
     ]
 }
