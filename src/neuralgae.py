@@ -5,6 +5,7 @@ TEMPLATE = './Templates/json.mustache'
 CLASS_RE = {
     'googlenet': '^(\d+) n\d+ (.*)$',
     'caffenet': '^(\d+) n\d+ (.*)$',
+    'vgg': '^(\d+) n\d+ (.*)$',
     'places': '^(\d+) (\S*)$',
     'manga_tag': '^(\d+) (.*)$'
     }

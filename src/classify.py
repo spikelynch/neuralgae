@@ -24,21 +24,29 @@ import caffe
 import random
 
 
+if 'CAFFE_PATH' in os.environ:
+    CAFFE_ROOT = os.environ['CAFFE_PATH']
+else:
+    print """
+You need to set the environment variable CAFFE_PATH to the location of your
+Caffe installation
+"""
+    sys.exit(-1)
+
 
 DEFAULT_MODEL = 'caffenet'
 
 CLASSES = './classes.txt'
 
-CAFFE_ROOT =  "/shared/homes/960700/caffe"
+CAFFE_MODELS = os.path.join(CAFFE_ROOT, 'models')
 
 MEAN = os.path.join(CAFFE_ROOT, 'python/caffe/imagenet/ilsvrc_2012_mean.npy')
-
-CAFFE_MODELS = os.path.join(CAFFE_ROOT, "models")
 
 IMAGE = os.path.join(CAFFE_ROOT, 'examples/images/fish-bike.jpg')
 
 MODELS = {
     'googlenet': 'bvlc_googlenet',
+    'vgg': 'VGG_ILSVRC_19_layers',
     'places': 'googlenet_places205',
     'oxford': 'oxford102',
     'cnn_age': 'cnn_age',
@@ -64,7 +72,7 @@ model_name = MODELS[MODEL]
 
 def classify(model_label, image, n):
     """Classifies an image file and returns the top n matching classes"""
-    caffe.set_mode_cpu()
+    caffe.set_mode_gpu()
     model_name = MODELS[model_label]
     model_d = os.path.join(CAFFE_MODELS, model_name)
     proto = os.path.join(model_d, 'deploy.prototxt')
@@ -153,7 +161,6 @@ if __name__ == '__main__':
     else:
         remote_cf = None
     if args.gpu:
-        print "Running on GPU"
         caffe.set_mode_gpu()
     targets = do_classify_weighted(remote_cf, args.model, args.image)
     print json.dumps(targets)

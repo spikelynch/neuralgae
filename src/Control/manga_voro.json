@@ -9,13 +9,12 @@
     "remove_seen": 1,
     "iters": 400,
     "nsample": 10,
-    "deepdraw": "./Control/Renderers/google_huge_gradient.json",
-    "bg_script": "/shared/homes/960700/deepdream/Scripts/background.sh",
-    "model": "places",
+    "deepdraw": "./Control/Renderers/manga_big_double.json",
+    "bg_script": "/shared/homes/960700/deepdream/Scripts/sparse2.py",
+    "model": "manga_tag",
     "size": 224,
     "sigma": 0.36,
     "bg_params": [
-        "224x224", "color", "8", "30", "gradient:white-black", "10%,90%",
-        "0x8"
+        "-x", "256", "-y", "256", "-c", "6", "-n", "80", "-v" 
     ]
 }

@@ -1,0 +1,21 @@
+{
+    "vector": 1,
+    "nstart": 4096,
+    "ntween": 4096,
+    "weighted": 1,
+    "cutoff": 0.00,
+    "reset": 0.75,
+    "add_randoms": 0,
+    "remove_seen": 0,
+    "iters": 400,
+    "nsample": 4096,
+    "deepdraw": "./Control/Renderers/feature_g3m_s4a.json",
+    "bg_script": "/shared/homes/960700/deepdream/Scripts/background.sh",
+    "model": "manga",
+    "size": 224,
+    "sigma": 0.36,
+    "bg_params": [
+        "224x224", "gray", "8", "70", "gradient:gray90-gray20", "10%,90%",
+        "0x8"
+    ]
+}

@@ -19,6 +19,7 @@ import classify
 NTARGETS = {
     'googlenet': 1000,
     'caffenet': 1000,
+    'vgg': 1000,
     'places': 205,
     'flickr_style': 10,
     'oxford': 102,
@@ -130,7 +131,11 @@ def flatten_targets(cf):
         cf['target'][t] = 1.0
     return cf['target']
 
-
+def jumble_targets(cf):
+    """Give every target a random value"""
+    for t in cf['target'].keys():
+        cf['target'][t] = random.uniform(cf['jumble'], 1.0)
+    return cf['target']
 
 def perturb_targets(cf, ltargets, downscale, seen):
     match = match_targets(ltargets, cf['target'])
@@ -145,13 +150,14 @@ def perturb_targets(cf, ltargets, downscale, seen):
         logger.debug("New: {}".format(show_targets(cf['target'])))
         logger.debug("Match between targets {} > {}".format(match, cf['reset']))
         if 'add_randoms' in cf:
-            logger.debug("Added {} random targets".format(cf['add_randoms']))
-            if cf['downscale']:
-                ds = ds * cf['downscale']
-                # Note- using old targets
-                cf['target'] = rescale_targets(ltargets, ds)
-                logger.debug("Downscaled originals by {}".format(ds))
-            cf['target'] = add_randoms(cf['target'], cf['add_randoms'])
+	    if cf['add_randoms']: 
+                logger.debug("Added {} random targets".format(cf['add_randoms']))
+                if 'downscale' in cf:
+                    ds = ds * cf['downscale']
+                    # Note- using old targets
+                    cf['target'] = rescale_targets(ltargets, ds)
+                    logger.debug("Downscaled originals by {}".format(ds))
+                cf['target'] = add_randoms(cf['target'], cf['add_randoms'])
         else:
             logger.debug("Removing max target")
             cf['target'], s = remove_max_targets(cf['target'])
@@ -161,6 +167,9 @@ def perturb_targets(cf, ltargets, downscale, seen):
         if  'flatten' in cf:
             logger.debug("Flattening targets")
             cf['target'] = flatten_targets(cf)
+        elif 'jumble' in cf:
+            logger.debug("Jumbling targets")
+            cf['target'] = jumble_targets(cf)
         else:
             logger.debug("Rescaling remaining targets")
             cf['target'] = rescale_targets(cf['target'])
@@ -229,17 +238,23 @@ def format_target(v):
 
 def target_names(t):
     imagen = ImageCategories(model)
-    if not type(t) == dict:
+    if type(t) == list:
         td = { int(i): 1 for i in t }
     else:
-        td = { int(i): v for (i, v) in t.iteritems() }
+        if type(t) != dict:
+            t1 = json.loads(t)
+        else:
+            t1 = t
+        td = { int(i): v for (i, v) in t1.iteritems() }
+    print("Getting target names for {}".format(td))
     nd = { imagen.name(i): v for (i, v) in td.iteritems() }
     nld = sorted(nd.items(), key=lambda x: -x[1])
+    print("Result {}".format(nld))
     return nld
 
 def target_name(t):
     imagen = ImageCategories(model)
-    return imagen.name(t)
+    return imagen.name(str(t))
 
 
 def show_targets(t):
@@ -379,10 +394,16 @@ else:
             sys.exit(-1)
     else:
         start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
-    logger.info("Start targets: " + show_targets(start_targets))
     conffile = os.path.join(args.outdir, conffilename(0))
-    cf['target'] = ','.join([ str(x) for x in start_targets ])
+    if 'vector' in cf:
+        d = {}
+        for x in range(NTARGETS[model]):
+            d[str(x)] = random.uniform(0, 1)
+        cf['target'] = json.dumps(d)
+    else:
+        cf['target'] = ','.join([ str(x) for x in start_targets ])
     frame_cf = cf # interpolate_cf(cf, 0)
+    logger.info("Start targets: " + cf['target'])
     frame_cf['model'] = model
     neuralgae.write_config(cf, conffile)
     make_background(cf, 'bg.jpg')
@@ -413,14 +434,21 @@ for i in range(start, start + args.number):
     match = 0.0
     if not args.ever:
         cf['target'] = do_classify(cf, remote_cf, model, lastimage)
-        if not multi and (ltargets and 'reset' in cf):
-            cf['target'], match, downscale, seen_targets = perturb_targets(cf, ltargets, downscale, seen_targets)
-        ltargets = copy.deepcopy(cf['target'])
-    frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
-    frame_cf['model'] = model
-    neuralgae.write_config(frame_cf, jsonfile)
+        if 'vector' not in cf:
+            if not multi and (ltargets and 'reset' in cf):
+                cf['target'], match, downscale, seen_targets = perturb_targets(cf, ltargets, downscale, seen_targets)
+            ltargets = copy.deepcopy(cf['target'])
+        else:
+            d = {}
+            for x in range(NTARGETS[model]):
+                d[str(x)] = random.uniform(0, 1)
+            cf['target'] = json.dumps(d)
+        frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
+        frame_cf['model'] = model
+        neuralgae.write_config(frame_cf, jsonfile)
     if not args.static:
         make_background(frame_cf, 'bg.jpg')
+    shutil.copy('bg.jpg', os.path.join(args.outdir, 'bg%s.jpg' % i))
     lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, imgfilename(i))
     targets = neuralgae.read_config(jsonfile)
     with open(outfile, 'a') as f:

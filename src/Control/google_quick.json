@@ -9,13 +9,13 @@
     "remove_seen": 1,
     "iters": 400,
     "nsample": 10,
-    "deepdraw": "./Control/Renderers/google_huge_gradient.json",
+    "deepdraw": "./Control/Renderers/googlenet_quick.json",
     "bg_script": "/shared/homes/960700/deepdream/Scripts/background.sh",
-    "model": "places",
+    "model": "googlenet",
     "size": 224,
     "sigma": 0.36,
     "bg_params": [
-        "224x224", "color", "8", "30", "gradient:white-black", "10%,90%",
+        "224x224", "gray", "8", "70", "gradient:gray90-gray10", "10%,90%",
         "0x8"
     ]
 }
