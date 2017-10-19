@@ -10,13 +10,13 @@
     "remove_seen": 1,
     "iters": 400,
     "nsample": 10,
-    "deepdraw": "./Control/Renderers/vgg_more.json",
+    "deepdraw": "./Control/Renderers/vgg_more_sharp.json",
     "bg_script": "/shared/homes/960700/deepdream/Scripts/background.sh",
     "model": "vgg",
     "size": 224,
     "sigma": 0.36,
     "bg_params": [
-        "224x224", "color", "8", "20", "gradient:gray90-gray50", "10%,90%",
+        "224x224", "gray", "8", "20", "gradient:gray70-gray30", "10%,90%",
         "0x3"
     ]
 }
