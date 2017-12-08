@@ -2,11 +2,11 @@
 
 import nltk, random, re, argparse, sys, os.path, itertools
 
-
+import traceback
 
 DEFINITIONS = './Definitions'
 LINELENGTH = 6
-TWEET_CHARS = 116
+TWEET_CHARS = 280 
 OLD_LINE_RE = re.compile('^(.*): (.*)$')
 WORD_RE = re.compile('^[a-zA-Z]')
 
@@ -59,24 +59,35 @@ def generate(cfd, word = 'the', num = 50):
             for k in range(cfd[word][j]):
                 arr.append(j)
         words.append(word)
-        word = arr[int((len(arr))*random.random())]     
+        i = int((len(arr))*random.random())
+        word = arr[i]     
     return words
 
 
-def make_tweet(cfd, words, num):
+def make_tweet(cfd, words, num, postlength):
     outwords = []
+    tweet = ""
+    done = False
     for w in words:
         start = w.replace(' ', '_')
         try:
-            outwords += generate(cfd, start, args.number)
+            line = generate(cfd, start, args.number)
+            line = [ w.replace('_', ' ') for w in line ]
+            if tweet:
+                tweet += '/'
+	    for w in line:
+                if len(tweet) + len(w) + 1 > postlength:
+                    done = True
+	            break
+                if tweet:
+                    if tweet[-1] != '/':
+                        tweet += ' '
+                tweet += w 
         except IndexError as e:
-            print "ERROR: %s %s" % ( start, e )
-    outwords = [ w.replace('_', ' ') for w in outwords ]
-    tweet = ""
-    for w in outwords:
-        if len(tweet) + len(w) + 1 > TWEET_CHARS:
+            print "ERROR: (%s) %s" % ( start, e )
+            print traceback.format_exc()
+        if done:
             break
-        tweet += " " + w
     return tweet
 
     
@@ -84,7 +95,7 @@ def make_tweet(cfd, words, num):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=LINELENGTH,help="Words per line")
-parser.add_argument("-t", "--tweets", action='store_true', help="Limit output to %s characters" % TWEET_CHARS)
+parser.add_argument("-l", "--length", type=int, help="Twitter/Mastodon mode: limit size of output and use / for line breaks")
 parser.add_argument("-m", "--model", type=str, default=None, help="Model name (to alternate use model1,model2)")
 parser.add_argument("logfile",  type=str, help="Log file from neuralgia_control")
 
@@ -117,8 +128,8 @@ with open(args.logfile, 'r') as lf:
             else:
                 print "Couldn't work out a model for line\n%s\n\n" % l
                 sys.exit(-1)
-        if args.tweets:
-            tweet = make_tweet(cfd, words, args.number)
+        if args.length:
+            tweet = make_tweet(cfd, words, args.number, args.length)
             print "%s:%s" % ( image, tweet )
         else:
             print image
@@ -129,7 +140,6 @@ with open(args.logfile, 'r') as lf:
                 except IndexError as e:
                     print "ERROR: %s %s" % ( start, e )
                 print line.replace('_', ' ')
-                print "\n"
 
 
 
