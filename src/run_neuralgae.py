@@ -27,6 +27,10 @@ NTARGETS = {
     'manga': 4096
 }
 
+MASK = {
+    'manga_tag': list(range(512, 1024))
+}
+
 DEFAULTS = {
     'nstart': 3,
     'ntween': 50,
@@ -44,8 +48,8 @@ DEFAULTS = {
 
 DEFAULT_LOGFILE = 'neuralgae.log'
 DEFAULT_LOGFORM = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-CONF_TEMP = 'conf%03d'
-IMG_TEMP = 'img%03d'
+CONF_TEMP = 'conf%d'
+IMG_TEMP = 'img%d'
 
 COLORFILE = './rgb.txt' #'/opt/X11/share/X11/rgb.txt'
 
@@ -116,6 +120,12 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
     cutoff = 0
     logger.info("Classify results: {}".format(show_targets(t0)))
     targets = { c: t0[c] for c in t0.keys() if t0[c] > cutoff }
+    if model in MASK:
+        targets = { c: targets[c] for c in targets.keys() if c in MASK[model] }
+        logger.info("Masked targets {}".format(show_targets(targets)))
+    else:
+        logger.info("No mask for model {}".format(model))
+
     if cf['nsample'] < len(targets):
         logger.debug("Sampling {} of {} targets".format(cf['nsample'], len(targets)))
         ts = random.sample(targets.keys(), cf['nsample'])
@@ -138,11 +148,14 @@ def jumble_targets(cf):
     return cf['target']
 
 def perturb_targets(cf, ltargets, downscale, seen):
+    if not len(cf['target']):
+        target = reset_targets(model)
+        return ( target, 0, 0, {} ) 
     match = match_targets(ltargets, cf['target'])
     if 'remove_seen' in cf:
         for s in seen.keys():
             if s in cf['targets']:
-                logger.debug("Removing seen target: {}".format(target_name(s)))
+                logger.info("Removing seen target: {}".format(target_name(s)))
                 del cf['targets'][s]
     ds = downscale
     if match >= cf['reset']:
@@ -174,11 +187,15 @@ def perturb_targets(cf, ltargets, downscale, seen):
             logger.debug("Rescaling remaining targets")
             cf['target'] = rescale_targets(cf['target'])
     else:
-      logger.debug("Resetting all targets")
-      cf['target'] = { t: 1 for t in random.sample(range(0, NTARGETS[model]), cf['ntween']) }
-      #seen = {}
+      cf['target'] = reset_targets(model) 
+      seen = {}
     logger.info("Final targets {}".format(show_targets(cf['target'])))
     return ( cf['target'], match, ds, seen )
+
+def reset_targets(model):
+    logger.info("Resetting all targets")
+    return { t: 1 for t in random.sample(target_set(model), cf['ntween']) }
+
 
 
 def match_targets(a1, a2):
@@ -199,7 +216,7 @@ def match_targets(a1, a2):
         return 0
 
 def add_randoms(targets, nrandoms):
-    tn = { str(t).encode('utf-8'):1 for t in range(0, NTARGETS[model]) }
+    tn = { str(t).encode('utf-8'):1 for t in target_set(model) }
     #print tn
     #print targets
     #for t in targets:
@@ -261,6 +278,11 @@ def show_targets(t):
     st = target_names(t)
     return ' '.join([ '{0}: {1:.3f}'.format(i[0], i[1]) for i in st])
 
+def target_set(model):
+    if model in MASK:
+        return MASK[model]
+    else:
+        return range(0, NTARGETS[mask])
 
 
 def log_line(image, model, match, t):
@@ -304,6 +326,7 @@ parser.add_argument("-n", "--number", type=int, default=42, help="Number of fram
 parser.add_argument("-i", "--initial", type=int, default=None, help="Initial image - if not supplied, will start with a random image")
 parser.add_argument("-f", "--first", type=str, default=None, help="First set of classes")
 parser.add_argument("-e", "--ever", action='store_true', help="Ignore classification, do first classes forever")
+parser.add_argument("-r", "--recurse", action='store_true', help="Recurse - use last output as inital image")
 parser.add_argument("-c", "--config", type=str, default=None, help="Global config file")
 parser.add_argument("-s", "--static", action='store_true', help="Same base image for all frames", default=False)
 
@@ -376,6 +399,7 @@ if ',' in cf['model']:
 mi = model_iter(cf['model'])
 
 start_targets = None
+lastimage = None
 
 if args.initial:
     model = mi.next()
@@ -388,16 +412,17 @@ else:
     model = mi.next()
     if args.first:
         start_targets = [ int(t) for t in args.first.split(',') ]
-        out = [ t for t in start_targets if t >= NTARGETS[model] ]
+        tset = target_set(model)
+        out = [ t for t in start_targets if t not in tset ]
         if out:
             logger.error("Classes out of range: {}".format(out))
             sys.exit(-1)
     else:
-        start_targets = random.sample(range(0, NTARGETS[model]), cf['nstart'])
+        start_targets = random.sample(target_set(model), cf['nstart'])
     conffile = os.path.join(args.outdir, conffilename(0))
     if 'vector' in cf:
         d = {}
-        for x in range(NTARGETS[model]):
+        for x in target_set(model):
             d[str(x)] = random.uniform(0, 1)
         cf['target'] = json.dumps(d)
     else:
@@ -440,14 +465,21 @@ for i in range(start, start + args.number):
             ltargets = copy.deepcopy(cf['target'])
         else:
             d = {}
-            for x in range(NTARGETS[model]):
+            for x in target_set(model):
                 d[str(x)] = random.uniform(0, 1)
             cf['target'] = json.dumps(d)
         frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
         frame_cf['model'] = model
         neuralgae.write_config(frame_cf, jsonfile)
     if not args.static:
-        make_background(frame_cf, 'bg.jpg')
+        if args.recurse and lastimage:
+            if 'copy' in cf:
+                a = cf['copy'] + [ lastimage, 'bg.jpg' ]
+                subprocess.check_output(a)
+            else:
+                shutil.copy(lastimage, 'bg.jpg')
+        else:
+            make_background(frame_cf, 'bg.jpg')
     shutil.copy('bg.jpg', os.path.join(args.outdir, 'bg%s.jpg' % i))
     lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, imgfilename(i))
     targets = neuralgae.read_config(jsonfile)
