@@ -28,7 +28,7 @@ NTARGETS = {
 }
 
 MASK = {
-    'manga_tag': list(range(512, 1024))
+    'manga_tag': list(range(1024,1536))
 }
 
 DEFAULTS = {
@@ -149,7 +149,7 @@ def jumble_targets(cf):
 
 def perturb_targets(cf, ltargets, downscale, seen):
     if not len(cf['target']):
-        target = reset_targets(model)
+        target = reset_targets(cf, model)
         return ( target, 0, 0, {} ) 
     match = match_targets(ltargets, cf['target'])
     if 'remove_seen' in cf:
@@ -187,12 +187,12 @@ def perturb_targets(cf, ltargets, downscale, seen):
             logger.debug("Rescaling remaining targets")
             cf['target'] = rescale_targets(cf['target'])
     else:
-      cf['target'] = reset_targets(model) 
+      cf['target'] = reset_targets(cf, model) 
       seen = {}
     logger.info("Final targets {}".format(show_targets(cf['target'])))
     return ( cf['target'], match, ds, seen )
 
-def reset_targets(model):
+def reset_targets(cf, model):
     logger.info("Resetting all targets")
     return { t: 1 for t in random.sample(target_set(model), cf['ntween']) }
 
@@ -282,7 +282,7 @@ def target_set(model):
     if model in MASK:
         return MASK[model]
     else:
-        return range(0, NTARGETS[mask])
+        return range(0, NTARGETS[model])
 
 
 def log_line(image, model, match, t):
@@ -316,7 +316,7 @@ def make_background(cf, bgfile):
 def deepdraw(conffile, infile, outdir, outfile):
     logger.info("Drawing image {} -> {}".format(infile, outfile))
     dd = [ '../../deepdream/dream.py', '--gpu', '--config', conffile, '--basefile', outfile, infile, outdir ]
-    logger.debug("Command: {}".format(dd))
+    logger.debug("Command: {}".format(' '.join(dd)))
     subprocess.check_output(dd, stderr=subprocess.STDOUT)
     return os.path.join(outdir, outfile) + '.jpg'
 
@@ -418,7 +418,7 @@ else:
             logger.error("Classes out of range: {}".format(out))
             sys.exit(-1)
     else:
-        start_targets = random.sample(target_set(model), cf['nstart'])
+        start_targets = reset_targets(cf, model)
     conffile = os.path.join(args.outdir, conffilename(0))
     if 'vector' in cf:
         d = {}
@@ -468,13 +468,22 @@ for i in range(start, start + args.number):
             for x in target_set(model):
                 d[str(x)] = random.uniform(0, 1)
             cf['target'] = json.dumps(d)
-        frame_cf = cf # interpolate_cf(cf, 1.0 * i / (args.number + 1))
+        if not len(cf['target']):
+            cf['target'] = reset_targets(cf, model)
+            logger.info("Resetting:  " + show_targets(cf['target']))
+        frame_cf = cf 
         frame_cf['model'] = model
+        logger.info("Writing targets: {} {}".format(jsonfile, show_targets(cf['target'])))
         neuralgae.write_config(frame_cf, jsonfile)
     if not args.static:
         if args.recurse and lastimage:
             if 'copy' in cf:
-                a = cf['copy'] + [ lastimage, 'bg.jpg' ]
+                print "lastimage = %s" % lastimage
+                if 'copypattern' in cf:
+                    cpf = os.path.join(args.outdir, cf['copypattern'] % ( i - 1 ))
+                else:
+                    cpf = lastimage
+                a = cf['copy'] + [ cpf, 'bg.jpg' ]
                 subprocess.check_output(a)
             else:
                 shutil.copy(lastimage, 'bg.jpg')
