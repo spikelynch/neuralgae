@@ -28,7 +28,7 @@ NTARGETS = {
 }
 
 MASK = {
-    'manga_tag': list(range(1024,1536))
+    'manga_tag': list(range(512))
 }
 
 DEFAULTS = {
@@ -118,11 +118,12 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
         t = classify.classify(model, lastimage, 0)
     t0 = dict(sorted(t.items(), key=lambda x: -x[1])[:cf['ntween']])
     cutoff = 0
-    logger.info("Classify results: {}".format(show_targets(t0)))
+    st = show_targets(cf, t0)
+    logger.info("Classify results: {}".format(st))
     targets = { c: t0[c] for c in t0.keys() if t0[c] > cutoff }
     if model in MASK:
         targets = { c: targets[c] for c in targets.keys() if c in MASK[model] }
-        logger.info("Masked targets {}".format(show_targets(targets)))
+        logger.info("Masked targets {}".format(show_targets(cf, targets)))
     else:
         logger.info("No mask for model {}".format(model))
 
@@ -131,7 +132,7 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
         ts = random.sample(targets.keys(), cf['nsample'])
         ots = targets
         targets = { t:ots[t] for t in ts }
-        logger.info("Sampled targets: {}".format(show_targets(targets)))
+        logger.info("Sampled targets: {}".format(show_targets(cf, targets)))
     return targets
 
 
@@ -159,8 +160,8 @@ def perturb_targets(cf, ltargets, downscale, seen):
                 del cf['targets'][s]
     ds = downscale
     if match >= cf['reset']:
-        logger.debug("Old: {}".format(show_targets(ltargets)))
-        logger.debug("New: {}".format(show_targets(cf['target'])))
+        logger.debug("Old: {}".format(show_targets(cf, ltargets)))
+        logger.debug("New: {}".format(show_targets(cf, cf['target'])))
         logger.debug("Match between targets {} > {}".format(match, cf['reset']))
         if 'add_randoms' in cf:
 	    if cf['add_randoms']: 
@@ -189,7 +190,7 @@ def perturb_targets(cf, ltargets, downscale, seen):
     else:
       cf['target'] = reset_targets(cf, model) 
       seen = {}
-    logger.info("Final targets {}".format(show_targets(cf['target'])))
+    logger.info("Final targets {}".format(show_targets(cf, cf['target'])))
     return ( cf['target'], match, ds, seen )
 
 def reset_targets(cf, model):
@@ -274,9 +275,13 @@ def target_name(t):
     return imagen.name(str(t))
 
 
-def show_targets(t):
-    st = target_names(t)
-    return ' '.join([ '{0}: {1:.3f}'.format(i[0], i[1]) for i in st])
+def show_targets(cf, t):
+    if 'vector' not in cf:
+    	st = target_names(t)
+    	return ' '.join([ '{0}: {1:.3f}'.format(i[0], i[1]) for i in st])
+    else:
+        k = t.keys()
+        return ' '.join([ "{0:.3f}".format(t[k[i]]) for i in range(32) ])
 
 def target_set(model):
     if model in MASK:
@@ -407,7 +412,7 @@ if args.initial:
     lastimage = os.path.join(args.outdir, ( IMG_TEMP + ".jpg" ) % base)
     initconf = os.path.join(args.outdir, ( CONF_TEMP + ".json" ) % base)
     start_targets = neuralgae.read_config(initconf)
-    logger.info("Initial from config " + show_targets(start_targets))
+    logger.info("Initial from config " + show_targets(cf, start_targets))
 else:
     model = mi.next()
     if args.first:
@@ -422,13 +427,14 @@ else:
     conffile = os.path.join(args.outdir, conffilename(0))
     if 'vector' in cf:
         d = {}
-        for x in target_set(model):
-            d[str(x)] = random.uniform(0, 1)
+#        for x in target_set(model):
+#            d[str(x)] = random.uniform(0, 1)
+        d = { str(n): 0.0 for n in target_set(model) }
+        d['0'] = 1.0
         cf['target'] = json.dumps(d)
     else:
         cf['target'] = ','.join([ str(x) for x in start_targets ])
     frame_cf = cf # interpolate_cf(cf, 0)
-    logger.info("Start targets: " + cf['target'])
     frame_cf['model'] = model
     neuralgae.write_config(cf, conffile)
     make_background(cf, 'bg.jpg')
@@ -464,30 +470,37 @@ for i in range(start, start + args.number):
                 cf['target'], match, downscale, seen_targets = perturb_targets(cf, ltargets, downscale, seen_targets)
             ltargets = copy.deepcopy(cf['target'])
         else:
-            d = {}
-            for x in target_set(model):
-                d[str(x)] = random.uniform(0, 1)
-            cf['target'] = json.dumps(d)
+            if 'vecreset' in cf:
+                if i % int(cf['vecreset']):
+                    logger.info("Resetting vector")
+                    d = { str(x): 0.0 for x in target_set(model) }
+                    d[str(i)] = 1.0
+                #for x in target_set(model):
+                #    d[str(x)] = random.uniform(0, 1)
+                    cf['target'] = json.dumps(d)
         if not len(cf['target']):
             cf['target'] = reset_targets(cf, model)
-            logger.info("Resetting:  " + show_targets(cf['target']))
+            logger.info("Resetting:  " + show_targets(cf, cf['target']))
         frame_cf = cf 
         frame_cf['model'] = model
-        logger.info("Writing targets: {} {}".format(jsonfile, show_targets(cf['target'])))
+        logger.info("Writing targets to {}".format(jsonfile))
         neuralgae.write_config(frame_cf, jsonfile)
     if not args.static:
+        logger.info("Creating background")
         if args.recurse and lastimage:
             if 'copy' in cf:
-                print "lastimage = %s" % lastimage
                 if 'copypattern' in cf:
                     cpf = os.path.join(args.outdir, cf['copypattern'] % ( i - 1 ))
                 else:
                     cpf = lastimage
+                logger.info("Copying from %s -> %s -> bg.jpg" % ( cpf, str(cf['copy'])))
                 a = cf['copy'] + [ cpf, 'bg.jpg' ]
                 subprocess.check_output(a)
             else:
+                logger.info("Direct copy of %s -> bg.jpg" % lastimage)
                 shutil.copy(lastimage, 'bg.jpg')
         else:
+            logger.info("Generating new background bg.jpg")
             make_background(frame_cf, 'bg.jpg')
     shutil.copy('bg.jpg', os.path.join(args.outdir, 'bg%s.jpg' % i))
     lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, imgfilename(i))
