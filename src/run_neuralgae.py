@@ -119,7 +119,7 @@ def do_classify_weighted(cf, remote_cf, model, lastimage):
     t0 = dict(sorted(t.items(), key=lambda x: -x[1])[:cf['ntween']])
     cutoff = 0
     st = show_targets(cf, t0)
-    logger.info("Classify results: {}".format(st))
+    logger.info("Classify {} results: {}".format(lastimage, st))
     targets = { c: t0[c] for c in t0.keys() if t0[c] > cutoff }
     if model in MASK:
         targets = { c: targets[c] for c in targets.keys() if c in MASK[model] }
@@ -424,20 +424,24 @@ else:
             sys.exit(-1)
     else:
         start_targets = reset_targets(cf, model)
+
+    make_background(cf, 'bg.jpg')
+ 
     conffile = os.path.join(args.outdir, conffilename(0))
-    if 'vector' in cf:
-        d = {}
-#        for x in target_set(model):
-#            d[str(x)] = random.uniform(0, 1)
-        d = { str(n): 0.0 for n in target_set(model) }
-        d['0'] = 1.0
-        cf['target'] = json.dumps(d)
+    if 'bgreset' in cf:
+        cf['target'] = do_classify(cf, remote_cf, model, 'bg.jpg')
     else:
-        cf['target'] = ','.join([ str(x) for x in start_targets ])
-    frame_cf = cf # interpolate_cf(cf, 0)
+        if 'vector' in cf:
+            d = {}
+            d = { str(n): 0.0 for n in target_set(model) }
+            a = random.choice(target_set(model))
+            d[str(a)] = 1.0
+            cf['target'] = json.dumps(d)
+        else:
+            cf['target'] = ','.join([ str(x) for x in start_targets ])
+    frame_cf = cf
     frame_cf['model'] = model
     neuralgae.write_config(cf, conffile)
-    make_background(cf, 'bg.jpg')
     lastimage = deepdraw(conffile, 'bg.jpg', args.outdir, imgfilename(0))
     #sys.exit(-1)
 
@@ -471,13 +475,13 @@ for i in range(start, start + args.number):
             ltargets = copy.deepcopy(cf['target'])
         else:
             if 'vecreset' in cf:
-                if i % int(cf['vecreset']):
+                if i % int(cf['vecreset']) == 0:
                     logger.info("Resetting vector")
-                    d = { str(x): 0.0 for x in target_set(model) }
-                    d[str(i)] = 1.0
-                #for x in target_set(model):
-                #    d[str(x)] = random.uniform(0, 1)
-                    cf['target'] = json.dumps(d)
+                    #d = { str(x): 0.0 for x in target_set(model) }
+                    for j in range(5):
+                        pick = random.choice(target_set(model))
+                        cf['target'][str(pick)] = 1.0 - cf['target'][pick] 
+                    #cf['target'] = json.dumps(d)
         if not len(cf['target']):
             cf['target'] = reset_targets(cf, model)
             logger.info("Resetting:  " + show_targets(cf, cf['target']))
@@ -488,13 +492,17 @@ for i in range(start, start + args.number):
     if not args.static:
         logger.info("Creating background")
         if args.recurse and lastimage:
-            if 'copy' in cf:
+            if ('bgreset' in cf) and (i % int(cf['bgreset']) == 0):
+                logger.info("bgreset to base background")
+                make_background(frame_cf, 'bg.jpg')
+            elif 'copy' in cf:
                 if 'copypattern' in cf:
                     cpf = os.path.join(args.outdir, cf['copypattern'] % ( i - 1 ))
                 else:
                     cpf = lastimage
                 logger.info("Copying from %s -> %s -> bg.jpg" % ( cpf, str(cf['copy'])))
                 a = cf['copy'] + [ cpf, 'bg.jpg' ]
+                logger.info("Copy = " + str(a))
                 subprocess.check_output(a)
             else:
                 logger.info("Direct copy of %s -> bg.jpg" % lastimage)

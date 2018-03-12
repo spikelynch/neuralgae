@@ -1,5 +1,6 @@
 {
     "vector": 1,
+    "bgreset": 60,
     "nstart": 4096,
     "ntween": 4096,
     "weighted": 1,
@@ -9,13 +10,13 @@
     "remove_seen": 0,
     "iters": 400,
     "nsample": 4096,
-    "deepdraw": "./Control/Renderers/feature_g3m_s4a.json",
-    "bg_script": "/shared/homes/960700/deepdream/Scripts/background.sh",
+    "deepdraw": "./Control/Renderers/feature_g3m_s4b_less.json",
     "model": "manga",
     "size": 224,
     "sigma": 0.36,
-    "bg_params": [
-        "224x224", "gray", "8", "70", "gradient:gray90-gray20", "10%,90%",
-        "0x8"
-    ]
+    "bg_script": "./random.py",
+    "bg_params": [ "Input/" ],
+    "copy": [ "convert", "-resize", "224x224"  ],
+    "copypattern": "img%d_octave_0.jpg"
+
 }
