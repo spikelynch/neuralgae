@@ -14,8 +14,8 @@
     "model": "manga",
     "size": 224,
     "sigma": 0.36,
-    "bg_script": "./random.py",
-    "bg_params": [ "Input/" ],
+    "bg_script": "/shared/homes/mlynch/neuralgae/src/randfile.py",
+    "bg_params": [ "./Input" ],
     "copy": [ "convert", "-resize", "224x224"  ],
     "copypattern": "img%d_octave_0.jpg"
 

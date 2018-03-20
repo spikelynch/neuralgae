@@ -495,6 +495,7 @@ for i in range(start, start + args.number):
             if ('bgreset' in cf) and (i % int(cf['bgreset']) == 0):
                 logger.info("bgreset to base background")
                 make_background(frame_cf, 'bg.jpg')
+                
             elif 'copy' in cf:
                 if 'copypattern' in cf:
                     cpf = os.path.join(args.outdir, cf['copypattern'] % ( i - 1 ))
