@@ -1,6 +1,6 @@
 {
     "vector": 1,
-    "bgreset": 60,
+    "bgreset": 40,
     "nstart": 4096,
     "ntween": 4096,
     "weighted": 1,
@@ -10,13 +10,13 @@
     "remove_seen": 0,
     "iters": 400,
     "nsample": 4096,
-    "deepdraw": "./Control/Renderers/feature_g3m_s4b_less.json",
+    "deepdraw": "./Control/Renderers/feature_g3m_s4b_3.json",
     "model": "manga",
     "size": 224,
     "sigma": 0.36,
     "bg_script": "/shared/homes/mlynch/neuralgae/src/randfile.py",
     "bg_params": [ "./Input" ],
     "copy": [ "convert", "-resize", "224x224"  ],
-    "copypattern": "img%d_octave_0.jpg"
+    "copypattern": "img%d_octave_1.jpg"
 
 }

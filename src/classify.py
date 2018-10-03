@@ -47,6 +47,7 @@ IMAGE = os.path.join(CAFFE_ROOT, 'examples/images/fish-bike.jpg')
 MODELS = {
     'googlenet': 'bvlc_googlenet',
     'vgg': 'VGG_ILSVRC_19_layers',
+    'vgg16': 'VGG_ILSVRC_16_layers',
     'places': 'googlenet_places205',
     'oxford': 'oxford102',
     'cnn_age': 'cnn_age',
@@ -63,7 +64,9 @@ MODELS = {
 LAYERS = {
     'oxford': 'fc8_oxford_102',
     'manga': 'encode1neuron',
-    'manga_tag': 'prob'
+    'manga_tag': 'prob',
+    'vgg': 'prob',
+    'vgg16': 'prob',
 }
 
 MODEL = DEFAULT_MODEL
