@@ -331,7 +331,7 @@ def deepdraw(conffile, infile, outdir, outfile):
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=42, help="Number of frames to generate")
 parser.add_argument("-p", "--prologue", type=int, default=0, help="Generates a few frames to warm up before outputting images")
-parser.add_argument("-i", "--initial", type=str, default=None, help="Initial image - if not supplied, will start with a random image")
+parser.add_argument("-i", "--initial", type=int, default=None, help="Initial image - if not supplied, will start with a random image")
 parser.add_argument("-f", "--first", type=str, default=None, help="First set of classes")
 parser.add_argument("-e", "--ever", action='store_true', help="Ignore classification, do first classes forever")
 parser.add_argument("-r", "--recurse", action='store_true', help="Recurse - use last output as inital image")
