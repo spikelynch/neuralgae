@@ -20,6 +20,7 @@ NTARGETS = {
     'googlenet': 1000,
     'caffenet': 1000,
     'vgg': 1000,
+    'vgg16': 1000,
     'places': 205,
     'flickr_style': 10,
     'oxford': 102,
@@ -50,6 +51,7 @@ DEFAULT_LOGFILE = 'neuralgae.log'
 DEFAULT_LOGFORM = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 CONF_TEMP = 'conf%d'
 IMG_TEMP = 'img%d'
+PRO_TEMP = 'pro%d'
 
 COLORFILE = './rgb.txt' #'/opt/X11/share/X11/rgb.txt'
 
@@ -328,7 +330,8 @@ def deepdraw(conffile, infile, outdir, outfile):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, default=42, help="Number of frames to generate")
-parser.add_argument("-i", "--initial", type=int, default=None, help="Initial image - if not supplied, will start with a random image")
+parser.add_argument("-p", "--prologue", type=int, default=0, help="Generates a few frames to warm up before outputting images")
+parser.add_argument("-i", "--initial", type=str, default=None, help="Initial image - if not supplied, will start with a random image")
 parser.add_argument("-f", "--first", type=str, default=None, help="First set of classes")
 parser.add_argument("-e", "--ever", action='store_true', help="Ignore classification, do first classes forever")
 parser.add_argument("-r", "--recurse", action='store_true', help="Recurse - use last output as inital image")
@@ -395,7 +398,7 @@ else:
 
 logger.info("Output {} - log file {}".format(args.outdir, args.outfile))
 logger.info("Generating %d frames" % args.number)
-
+logger.info("Prologue of %d frames" % args.prologue)
 
 multi = False
 if ',' in cf['model']:
@@ -442,11 +445,12 @@ else:
     frame_cf = cf
     frame_cf['model'] = model
     neuralgae.write_config(cf, conffile)
-    lastimage = deepdraw(conffile, 'bg.jpg', args.outdir, imgfilename(0))
+    lastimage = deepdraw(conffile, 'bg.jpg', args.outdir, imgfilename(-args.prologue))
     #sys.exit(-1)
 
-with open(outfile, 'w') as f:
-    f.write(log_line(lastimage, model, 0.0, start_targets))
+if not args.prologue:
+    with open(outfile, 'w') as f:
+        f.write(log_line(lastimage, model, 0.0, start_targets))
 
 
 ltargets = None
@@ -463,10 +467,33 @@ if args.initial:
 else:
     start = 1
 
-for i in range(start, start + args.number):
+for i in range(start, start + args.number + args.prologue - 1):
+    index = i - args.prologue
     model = mi.next()
-    jsonfile = os.path.join(args.outdir, conffilename(i))
+    jsonfile = os.path.join(args.outdir, conffilename(index))
     match = 0.0
+    if not args.static:
+        logger.info("Creating background")
+        if args.recurse and lastimage:
+            if ('bgreset' in cf) and (i % int(cf['bgreset']) == 0):
+                logger.info("bgreset to base background")
+                make_background(frame_cf, 'bg.jpg')
+                lastimage = 'bg.jpg'
+            elif 'copy' in cf:
+                if 'copypattern' in cf:
+                    cpf = os.path.join(args.outdir, cf['copypattern'] % ( index - 1 ))
+                else:
+                    cpf = lastimage
+                logger.info("Copying from %s -> %s -> bg.jpg" % ( cpf, str(cf['copy'])))
+                a = cf['copy'] + [ cpf, 'bg.jpg' ]
+                logger.info("Copy = " + str(a))
+                subprocess.check_output(a)
+            else:
+                logger.info("Direct copy of %s -> bg.jpg" % lastimage)
+                shutil.copy(lastimage, 'bg.jpg')
+        else:
+            logger.info("Generating new background bg.jpg")
+            make_background(frame_cf, 'bg.jpg')
     if not args.ever:
         cf['target'] = do_classify(cf, remote_cf, model, lastimage)
         if 'vector' not in cf:
@@ -489,30 +516,10 @@ for i in range(start, start + args.number):
         frame_cf['model'] = model
         logger.info("Writing targets to {}".format(jsonfile))
         neuralgae.write_config(frame_cf, jsonfile)
-    if not args.static:
-        logger.info("Creating background")
-        if args.recurse and lastimage:
-            if ('bgreset' in cf) and (i % int(cf['bgreset']) == 0):
-                logger.info("bgreset to base background")
-                make_background(frame_cf, 'bg.jpg')
-                
-            elif 'copy' in cf:
-                if 'copypattern' in cf:
-                    cpf = os.path.join(args.outdir, cf['copypattern'] % ( i - 1 ))
-                else:
-                    cpf = lastimage
-                logger.info("Copying from %s -> %s -> bg.jpg" % ( cpf, str(cf['copy'])))
-                a = cf['copy'] + [ cpf, 'bg.jpg' ]
-                logger.info("Copy = " + str(a))
-                subprocess.check_output(a)
-            else:
-                logger.info("Direct copy of %s -> bg.jpg" % lastimage)
-                shutil.copy(lastimage, 'bg.jpg')
-        else:
-            logger.info("Generating new background bg.jpg")
-            make_background(frame_cf, 'bg.jpg')
-    shutil.copy('bg.jpg', os.path.join(args.outdir, 'bg%s.jpg' % i))
-    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, imgfilename(i))
+    #shutil.copy('bg.jpg', os.path.join(args.outdir, 'bg%s.jpg' % i))
+    fname = imgfilename(index)
+    lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, fname)
     targets = neuralgae.read_config(jsonfile)
-    with open(outfile, 'a') as f:
-        f.write(log_line(lastimage, model, match, targets))
+    if index > -1:
+        with open(outfile, 'a') as f:
+            f.write(log_line(lastimage, model, match, targets))
