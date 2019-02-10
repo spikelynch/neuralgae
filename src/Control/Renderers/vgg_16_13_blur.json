@@ -1,0 +1,19 @@
+[
+    {
+        "start_step_size": 1.75,
+        "layer": "prob",
+        "start_sigma": 1.5,
+        "end_step_size": 1.75,
+        "end_sigma": 0.4,
+        "iter_n": 640
+    },
+    {
+        "start_step_size": 1.625,
+        "layer": "prob",
+        "start_sigma": 0.4,
+        "end_step_size": 1.625,
+        "end_sigma": 0.36,
+        "iter_n": 720,
+        "scale": 1.414
+    }
+]

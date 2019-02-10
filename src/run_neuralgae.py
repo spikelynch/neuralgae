@@ -262,10 +262,22 @@ def target_names(t):
         td = { int(i): 1 for i in t }
     else:
         if type(t) != dict:
-            t1 = json.loads(t)
+            # FIXME - this is a hack for christmas
+            listre = re.compile('^[\d,]+$')
+            if listre.match(t):
+                t1 = t.split(',')
+                print("list = " + t)
+                print(t1)
+            else: 
+                t1 = json.loads(t)
         else:
             t1 = t
-        td = { int(i): v for (i, v) in t1.iteritems() }
+        if type(t1) == int:
+            td = { t1: 1 }
+        elif type(t1) == list:
+            td = { int(i): 1 for i in t1 }
+        else:
+            td = { int(i): v for (i, v) in t1.iteritems() }
     print("Getting target names for {}".format(td))
     nd = { imagen.name(i): v for (i, v) in td.iteritems() }
     nld = sorted(nd.items(), key=lambda x: -x[1])
@@ -457,8 +469,8 @@ ltargets = None
 
 seen_targets = {}
 
-if args.ever:
-    cf['target'] = cf['target'].split(',')
+#if args.ever:
+#    cf['target'] = cf['target'].split(',')
 
 downscale = 1
 
@@ -512,11 +524,11 @@ for i in range(start, start + args.number + args.prologue - 1):
         if not len(cf['target']):
             cf['target'] = reset_targets(cf, model)
             logger.info("Resetting:  " + show_targets(cf, cf['target']))
-        frame_cf = cf 
-        frame_cf['model'] = model
-        logger.info("Writing targets to {}".format(jsonfile))
-        neuralgae.write_config(frame_cf, jsonfile)
-    #shutil.copy('bg.jpg', os.path.join(args.outdir, 'bg%s.jpg' % i))
+    frame_cf = cf 
+    frame_cf['model'] = model
+    logger.info("Writing targets to {}".format(jsonfile))
+    neuralgae.write_config(frame_cf, jsonfile)
+    shutil.copy('bg.jpg', os.path.join(args.outdir, 'bg%s.jpg' % i))
     fname = imgfilename(index)
     lastimage = deepdraw(jsonfile, 'bg.jpg', args.outdir, fname)
     targets = neuralgae.read_config(jsonfile)

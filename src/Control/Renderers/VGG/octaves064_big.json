@@ -1,0 +1,20 @@
+[
+    {
+        "layer": "prob", 
+        "iter_n": 480, 
+        "start_step_size": 4.152219989746548, 
+        "end_step_size": 1.2959662271727048, 
+        "end_sigma": 0.07652945710346029, 
+        "start_sigma": 0.09801858885798567
+    },
+    {
+        "layer": "prob", 
+        "iter_n": 480, 
+        "start_step_size": 4.152219989746548, 
+        "end_step_size": 1.2959662271727048, 
+        "end_sigma": 0.07652945710346029, 
+        "start_sigma": 0.09801858885798567,
+        "scale": 1.5
+    }
+]
+

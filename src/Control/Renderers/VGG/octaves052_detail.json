@@ -1,0 +1,28 @@
+[
+    {
+        "layer": "prob", 
+        "iter_n": 480, 
+        "start_step_size": 6.609097317287286, 
+        "end_step_size": 1.3881954950301403, 
+        "end_sigma": 0.5540646117420412, 
+        "start_sigma": 0.555770786490689
+    },
+    {
+        "layer": "prob", 
+        "iter_n": 480, 
+        "start_step_size": 6.609097317287286, 
+        "end_step_size": 1.3881954950301403, 
+        "end_sigma": 0.5540646117420412, 
+        "start_sigma": 0.555770786490689,
+        "scale": 1.414
+    },
+    {
+        "layer": "prob", 
+        "iter_n": 480, 
+        "start_step_size": 6.609097317287286, 
+        "end_step_size": 1.3881954950301403, 
+        "end_sigma": 0.5540646117420412, 
+        "start_sigma": 0.555770786490689,
+        "scale": 2
+    }
+]

@@ -1,0 +1,24 @@
+{
+    "nstart": 8,
+    "ntween": 8,
+    "recurse": 1,
+    "weighted": 1,
+    "cutoff": 0.01,
+    "jumble": 0,
+    "reset": 0.9,
+    "add_randoms": 1,
+    "downscale": 0.8,
+    "remove_seen": 1,
+    "iters": 400,
+    "nsample": 5,
+    "deepdraw": "./Control/Renderers/recurse.16.16.json",
+    "bg_script": "convert",
+    "model": "vgg",
+    "size": 224,
+    "sigma": 0.36,
+    "bg_params": [
+      "-size", "320x320", "-colorspace", "RGB", "-type", "truecolor", "canvas:gray75"
+    ],
+    "copy":[ "convert", "-auto-gamma", "-resize", "320x320", "-blur", "0x4"  ]
+
+}

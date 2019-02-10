@@ -1,0 +1,23 @@
+{
+    "nstart": 3,
+    "ntween": 5,
+    "weighted": 1,
+    "cutoff": 0.01,
+    "jumble": 0,
+    "reset": 0.9,
+    "add_randoms": 1,
+    "downscale": 0.8,
+    "remove_seen": 1,
+    "iters": 400,
+    "nsample": 3,
+    "deepdraw": "./Control/Renderers/vgg_test2_grad.json",
+    "bg_script": "convert",
+    "model": "vgg",
+    "size": 224,
+    "sigma": 0.36,
+    "bg_params": [
+      "-size", "224x224", "-colorspace", "RGB", "-type", "truecolor", "canvas:gray75"
+    ],
+    "copy":[ "convert", "-resize", "224x224"  ],
+    "copypattern": "img%d_octave_8.jpg"
+}

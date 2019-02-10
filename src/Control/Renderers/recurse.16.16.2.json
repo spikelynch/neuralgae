@@ -1,0 +1,20 @@
+[
+    {
+        "start_step_size": 2.0, 
+        "layer": "prob", 
+        "start_sigma": 0.32, 
+        "end_step_size": 2.5, 
+        "end_sigma": 0.32, 
+        "iter_n":100 
+    },
+    {
+        "start_step_size": 2.0, 
+        "layer": "prob", 
+        "start_sigma": 0.32, 
+        "end_step_size": 2.5, 
+        "end_sigma": 0.24,
+        "scale": 2.0,
+        "iter_n":100 
+    }
+
+]
